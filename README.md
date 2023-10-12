@@ -1,59 +1,39 @@
-# FirstProj
-
-this is the first step i have committed.
-
-import okhttp3.mockwebserver.MockResponse;
-import okhttp3.mockwebserver.MockWebServer;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.MediaType;
-import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.ResponseEntity;
 
 import java.math.BigDecimal;
-import java.net.URL;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class YourServiceTest {
 
-    private MockWebServer mockWebServer;
+    @LocalServerPort
+    private int port;
 
+    @Autowired
     private YourService yourService; // replace 'YourService' with the actual name of your service class
 
-    @BeforeEach
-    public void setUp() throws Exception {
-        mockWebServer = new MockWebServer();
-        mockWebServer.start();
-
-        WebClient webClient = WebClient.builder()
-                .baseUrl(mockWebServer.url("/").toString())
-                .build();
-
-        yourService = new YourService(webClient); // Assuming the service accepts WebClient in its constructor
-    }
-
-    @AfterEach
-    public void tearDown() throws Exception {
-        mockWebServer.shutdown();
-    }
+    @Autowired
+    private TestRestTemplate testRestTemplate;
 
     @Test
-    public void testRetrieveTemplateWebClientCall() throws Exception {
-        // Given
-        String responseBody = "{...}"; // your expected JSON response
-        mockWebServer.enqueue(new MockResponse()
-                .setBody(responseBody)
-                .setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-        );
+    public void testRetrieveTemplateWebClientCall() {
+        // Setup
+        String basePath = "http://localhost:" + port;
+        String pathLabels = "/path";
+        String objectName = "objectName";
+        BigDecimal objectVersion = BigDecimal.ONE;
+        String mdata0bjTypeCd = "typeCd";
 
-        // When
-        TemplateMigrationObject result = yourService.retrieveTemplateWebClientCall(
-                mockWebServer.url("/").toString(), "/path", "objectName", BigDecimal.ONE, "typeCd"
-        );
+        // Actual method call
+        TemplateMigrationObject result = yourService.retrieveTemplateWebClientCall(basePath, pathLabels, objectName, objectVersion, mdata0bjTypeCd);
 
-        // Then
+        // Assertions
         assertNotNull(result);
         // Add more assertions based on what you expect the result to be
     }
