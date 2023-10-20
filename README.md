@@ -1,27 +1,27 @@
-public class TemplateProfileObjectDTO {
+@Bean
+public ModelMapper modelMapper() {
+    ModelMapper mapper = new ModelMapper();
+    
+    // Define property mapping
+    PropertyMap<omMsgTemplateEntity, TemplateProfileObjectDTO> orderMap = new PropertyMap<omMsgTemplateEntity, TemplateProfileObjectDTO>() {
+        protected void configure() {
+            map().setTemplateName(source.getObjectName());
+            map().setTemplateVersion(source.getObjectVersion());
+            map().setVariableSchemaName(source.getVariableSchemaNm());
+            map().setGoGetCollectionName(source.getGoGetCollectionNm());
+            map().setTemplateVersionEffectiveDate(source.getMsgTemplVersionEffectiveDt());
+            map().setDisplay(source.getDisplayNm());
+            map().setDisplayComment(source.getDisplayCommentTxt());
+            // ... (Continue for all the other fields)
 
-private String objectName;
-private LocalDate effectiveDate;
-private BigDecimal objectVersion;
-private String enterpriseDocId;
-private String variableSchemaName;
-private String busArea;
-private String busCategory;
-private String busSubCategory;
-private String messageTemplateTypeCd;
-private String displayName;
-private String regulatoryClassification;
-private String sourceSystemDocumentId;
-private String sourceTool;
-private String gogetCollectionName;
-private String channelName;
-private String subChannelName;
-
-private String pageNumberHorizAlignCd;
-private String pageNumberTypeCd;
-private String pageNumberVertAlignCd;
-// private String continousNumberingAcrossEnclosures; //--? private String pageNumberDisplayRangeCd; private String showPageCountInd; private String pageNumberCountRangeCd; private String continousNumberingAcrossCCCover; private String continousNumberingAcrossMaster;
-
-private String channelDefaultCode;
-private String channelDefaultOptionCode;
+            // Mapping lists (assuming DTOs for these lists exist)
+            using(ctx -> ((omMsgTemplateEntity) ctx.getSource()).getOmVariableTemplateRltnEntityList())
+                .map(source, destination.getVariableTemplateRelationList());
+            using(ctx -> ((omMsgTemplateEntity) ctx.getSource()).getOmGroupTemplateRltnEntityList())
+                .map(source, destination.getGroupTemplateRelationList());
+        }
+    };
+    
+    mapper.addMappings(orderMap);
+    return mapper;
 }
