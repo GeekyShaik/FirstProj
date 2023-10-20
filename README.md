@@ -10,6 +10,6 @@ import java.util.List;
 @Repository
 public interface TemplateProfileObjectRepository extends JpaRepository<TemplateProfileObject, Long> {
 
-    @Query("SELECT t FROM TemplateProfileObject t WHERE t.templateName = :templateName")
-    List<TemplateProfileObject> findByTemplateName(String templateName);
+    @Query("SELECT t FROM TemplateProfileObject t WHERE t.templateName = :templateName AND t.omTemplateVersionNr = :omTemplateVersionNr")
+    List<TemplateProfileObject> findByTemplateNameAndVersion(String templateName, String omTemplateVersionNr);
 }
