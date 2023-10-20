@@ -1,15 +1,27 @@
-package com.metadata.service.repository;
+public class TemplateProfileObjectDTO {
 
-import com.metadata.service.entity.TemplateProfileObject;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.stereotype.Repository;
+private String objectName;
+private LocalDate effectiveDate;
+private BigDecimal objectVersion;
+private String enterpriseDocId;
+private String variableSchemaName;
+private String busArea;
+private String busCategory;
+private String busSubCategory;
+private String messageTemplateTypeCd;
+private String displayName;
+private String regulatoryClassification;
+private String sourceSystemDocumentId;
+private String sourceTool;
+private String gogetCollectionName;
+private String channelName;
+private String subChannelName;
 
-import java.util.List;
+private String pageNumberHorizAlignCd;
+private String pageNumberTypeCd;
+private String pageNumberVertAlignCd;
+// private String continousNumberingAcrossEnclosures; //--? private String pageNumberDisplayRangeCd; private String showPageCountInd; private String pageNumberCountRangeCd; private String continousNumberingAcrossCCCover; private String continousNumberingAcrossMaster;
 
-@Repository
-public interface TemplateProfileObjectRepository extends JpaRepository<TemplateProfileObject, Long> {
-
-    @Query("SELECT t FROM TemplateProfileObject t WHERE t.templateName = :templateName AND t.omTemplateVersionNr = :omTemplateVersionNr")
-    List<TemplateProfileObject> findByTemplateNameAndVersion(String templateName, String omTemplateVersionNr);
+private String channelDefaultCode;
+private String channelDefaultOptionCode;
 }
