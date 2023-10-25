@@ -44,7 +44,6 @@ public class ModelMapper {
         return mapper;
     }
 
-    private void addMappings(PropertyMap<OmMsgTemplateEntity, TemplateProfileDTO> orderMap) {
-    }
+   
 }
 
