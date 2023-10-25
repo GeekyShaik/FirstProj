@@ -6,7 +6,7 @@ public class ModelMapperConfig {
 
     @Bean
     public ModelMapperConfig modelMapper() {
-        ModelMapperConfig mapper = new ModelMapperConfig();
+        ModelMapper mapper = new ModelMapper();
 
 // Define property mapping
         PropertyMap<OmMsgTemplateEntity, TemplateProfileDTO> orderMap = new PropertyMap<OmMsgTemplateEntity, TemplateProfileDTO>() {
@@ -38,9 +38,8 @@ public class ModelMapperConfig {
         };
 
         mapper.addMappings(orderMap);
-        return mapper;
+        return modelMapper();
     }
 
 
 }
-
