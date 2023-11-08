@@ -1,0 +1,14 @@
+@RestController
+@RequestMapping("/api/templates")
+public class TemplateProfileController {
+
+    @Autowired
+    private TemplateProfileService templateProfileService;
+
+    @GetMapping("/profile")
+    public List<TemplateProfileDto> getTemplateProfiles(@RequestParam("templateName") String templateName,
+                                                       @RequestParam("templateVersionNr") String templateVersionNr) {
+        List<TemplateProfileDto> dtos = templateProfileService.getTemplateProfileDtos(templateName, templateVersionNr);
+        return dtos;
+    }
+}
