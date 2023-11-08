@@ -264,5 +264,87 @@ public class OmMsgTemplateEntity implements Serializable {
     @Column(columnDefinition = "DATE", name = "LEGACY_REVISION_DT")
     private LocalDate legacyRevisionDt;
 
-    //    @Column(columnDefinition = "VARCHAR2(15)", name = "DRCT_MAIL_NR")
-    //    private String drctMailNr;
+   ===============================================================
+
+   import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDate;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class TemplateProfileDto {
+
+
+    @JsonProperty("templateName")
+        private String templateName;
+    @JsonProperty("effectiveDate")
+        private LocalDate effectiveDate;
+    @JsonProperty("templateVersion")
+        private String templateVersion;
+    @JsonProperty("enterpriseDocId")
+        private String enterpriseDocId;
+    @JsonProperty("variableSchemaName")
+        private String variableSchemaName;
+    @JsonProperty("busArea")
+        private String busArea;
+    @JsonProperty("busCategory")
+        private String busCategory;
+
+    @JsonProperty("busSubCategory")
+    private String busSubCategory;
+
+    @JsonProperty("messageTemplateTypeCd")
+        private String messageTemplateTypeCd;
+    @JsonProperty("displayName")
+        private String displayName;
+    @JsonProperty("regulatoryClassification")
+        private String regulatoryClassification;
+    @JsonProperty("sourceSystemDocumentId")
+        private String sourceSystemDocumentId;
+    @JsonProperty("sourceTool")
+        private String sourceTool;
+    @JsonProperty("goGetCollectionName")
+        private String goGetCollectionName;
+
+    @JsonProperty("pageNumberHorizAlignCd")
+
+        private String pageNumberHorizAlignCd;
+    @JsonProperty("pageNumberTypeCd")
+        private String pageNumberTypeCd;
+    @JsonProperty("pageNumberVertAlignCd")
+        private String pageNumberVertAlignCd;
+
+    @JsonProperty("channelDefaultCode")
+        private String channelDefaultCode;
+    @JsonProperty("channelDefaultOptionCode")
+        private String channelDefaultOptionCode;
+    @JsonProperty("pageNumberDisplayRangeCd")
+    private String pageNumberDisplayRangeCd;
+
+    @JsonProperty("showPageCountInd")
+    private String showPageCountInd;
+
+    @JsonProperty("pageNumberCountRangeCd")
+    private String pageNumberCountRangeCd;
+
+    @JsonProperty("continousNumberingAcrossCCCover")
+    private String continousNumberingAcrossCCCover;
+
+    @JsonProperty("continousNumberingAcrossMaster")
+    private String continousNumberingAcrossMaster;
+
+    @JsonProperty("continousNumberingAcrossEnclosures")
+    private String continousNumberingAcrossEnclosures;
+
+
+
+
+
+}
+==============================================
+
+
