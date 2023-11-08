@@ -1,69 +1,31 @@
-public class TemplateProfileDto {
+@Service
+public class TemplateProfileService {
+    @Autowired
+    private OmMessageTemplateRepository templateRepository;
 
+    public List<TemplateProfileDto> getTemplatesByNameAndVersion(String templateName, String templateVersion) {
+        return templateRepository.findByTemplateNameAndVersion(templateName, templateVersion);
+    }
+}
+===============
 
-    @JsonProperty("templateName")
-        private String templateName;
-    @JsonProperty("effectiveDate")
-        private LocalDate effectiveDate;
-    @JsonProperty("templateVersion")
-        private String templateVersion;
-    @JsonProperty("enterpriseDocId")
-        private String enterpriseDocId;
-    @JsonProperty("variableSchemaName")
-        private String variableSchemaName;
-    @JsonProperty("busArea")
-        private String busArea;
-    @JsonProperty("busCategory")
-        private String busCategory;
+@RestController
+@RequestMapping("/templates")
+public class TemplateProfileController {
+    @Autowired
+    private TemplateProfileService templateService;
 
-    @JsonProperty("busSubCategory")
-    private String busSubCategory;
+    @GetMapping("/find")
+    public ResponseEntity<List<TemplateProfileDto>> getTemplatesByNameAndVersion(
+            @RequestParam String templateName,
+            @RequestParam String templateVersion
+    ) {
+        List<TemplateProfileDto> templates = templateService.getTemplatesByNameAndVersion(templateName, templateVersion);
 
-    @JsonProperty("messageTemplateTypeCd")
-        private String messageTemplateTypeCd;
-    @JsonProperty("displayName")
-        private String displayName;
-    @JsonProperty("regulatoryClassification")
-        private String regulatoryClassification;
-    @JsonProperty("sourceSystemDocumentId")
-        private String sourceSystemDocumentId;
-    @JsonProperty("sourceTool")
-        private String sourceTool;
-    @JsonProperty("goGetCollectionName")
-        private String goGetCollectionName;
-
-    @JsonProperty("pageNumberHorizAlignCd")
-
-        private String pageNumberHorizAlignCd;
-    @JsonProperty("pageNumberTypeCd")
-        private String pageNumberTypeCd;
-    @JsonProperty("pageNumberVertAlignCd")
-        private String pageNumberVertAlignCd;
-
-    @JsonProperty("channelDefaultCode")
-        private String channelDefaultCode;
-    @JsonProperty("channelDefaultOptionCode")
-        private String channelDefaultOptionCode;
-    @JsonProperty("pageNumberDisplayRangeCd")
-    private String pageNumberDisplayRangeCd;
-
-    @JsonProperty("showPageCountInd")
-    private String showPageCountInd;
-
-    @JsonProperty("pageNumberCountRangeCd")
-    private String pageNumberCountRangeCd;
-
-    @JsonProperty("continousNumberingAcrossCCCover")
-    private String continousNumberingAcrossCCCover;
-
-    @JsonProperty("continousNumberingAcrossMaster")
-    private String continousNumberingAcrossMaster;
-
-    @JsonProperty("continousNumberingAcrossEnclosures")
-    private String continousNumberingAcrossEnclosures;
-
-
-
-
-
+        if (templates.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        } else {
+            return ResponseEntity.ok(templates);
+        }
+    }
 }
