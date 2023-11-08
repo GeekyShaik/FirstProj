@@ -1,52 +1,52 @@
-@Service
-public class TemplateProfileService {
-    @Autowired
-    private OmMessageTemplateRepository templateRepository;
-
-    public List<TemplateProfileDto> getTemplatesByNameAndVersion(String templateName, String templateVersion) {
-        return templateRepository.findByTemplateNameAndVersion(templateName, templateVersion);
-    }
-}
-===============
-
 @RestController
-@RequestMapping("/templates")
+@RequestMapping("/template")
 public class TemplateProfileController {
     @Autowired
     private TemplateProfileService templateService;
 
-    @GetMapping("/find")
-    public ResponseEntity<List<TemplateProfileDto>> getTemplatesByNameAndVersion(
-            @RequestParam String templateName,
-            @RequestParam String templateVersion
+    @GetMapping("/retrieve")
+    public ResponseEntity<TemplateProfileDTO> retrieveTemplate(
+            @RequestParam String objectName,
+            @RequestParam BigDecimal objectVersion
     ) {
-        List<TemplateProfileDto> templates = templateService.getTemplatesByNameAndVersion(templateName, templateVersion);
-
-        if (templates.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        } else {
-            return ResponseEntity.ok(templates);
+        try {
+            TemplateProfileDTO template = templateService.retrieveTemplateWebClientCall(objectName, objectVersion);
+            return ResponseEntity.ok(template);
+        } catch (Exception e) {
+            // Handle the exception as needed
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 }
+=======================
 
-==============================================================================================
+@Service
+public class TemplateProfileService {
+    @Value("${metadata.basePath}")
+    private String basePath; // Read from application properties
 
-public TemplateProfileDTO retrieveTemplateWebClientCall(String basePath, String pathLabels, String objectName, BigDecimal objectVersion) throws Exception {
+    @Value("${metadata.pathLabels}")
+    private String pathLabels; // Read from application properties
 
+    @Value("${metadata.apiKeyLabel}")
+    private String apiKeyLabel; // Read from application properties
+
+    private final WebClient metadataWebServiceClient;
+
+    @Autowired
+    public TemplateProfileService(WebClient.Builder webClientBuilder) {
+        this.metadataWebServiceClient = webClientBuilder.baseUrl(basePath).build();
+    }
+
+    public TemplateProfileDTO retrieveTemplateWebClientCall(String objectName, BigDecimal objectVersion) {
         return metadataWebServiceClient.get()
-                .uri(
-                        UriComponentsBuilder.fromUriString(
-                                basePath + pathLabels)
-                                .build(objectName, objectVersion))
+                .uri(UriComponentsBuilder.fromUriString(pathLabels).build(objectName, objectVersion))
                 .header(apiKeyLabel, API_KEY)
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
-                .onStatus(HttpStatusCode::is4xxClientError, clientResponse ->
-                        Mono.error(new Throwable()))
-                .onStatus(HttpStatusCode::is5xxServerError, clientResponse ->
-                        Mono.error(new Throwable()))
+                .onStatus(HttpStatusCode::is4xxClientError, clientResponse -> Mono.error(new Throwable()))
+                .onStatus(HttpStatusCode::is5xxServerError, clientResponse -> Mono.error(new Throwable()))
                 .bodyToMono(TemplateProfileDTO.class)
                 .block();
     }
-
+}
