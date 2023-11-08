@@ -49,3 +49,56 @@ public class TemplateProfileController {
 4. Configure your Spring Boot application to scan for these components. Make sure to configure your database connection and repository properly in your application's properties or configuration class.
 
 With these classes in place, you can now access the `/api/templates/profile` endpoint, passing `templateName` and `templateVersionNr` as request parameters to retrieve a list of `TemplateProfileDto` objects. You'll need to implement the mapping logic from `OmMsgTemplateEntity` to `TemplateProfileDto` in the service class based on your specific requirements.
+
+
+To create a Spring Boot controller and service class to expose an endpoint that maps DTOs and returns a `List<TemplateProfileDto>`, you can follow these steps:
+
+1. Create the `TemplateProfileDto` class if it doesn't already exist.
+
+2. Create a Service class to handle the logic for retrieving and mapping the data. Here's an example:
+
+```java
+@Service
+public class TemplateProfileService {
+
+    @Autowired
+    private OmMessageTemplateRepository omMessageTemplateRepository;
+
+    public List<TemplateProfileDto> getTemplateProfileDtos(String templateName, String templateVersionNr) {
+        List<OmMsgTemplateEntity> entities = omMessageTemplateRepository.findByTemplateNameAndVersion(templateName, templateVersionNr);
+        List<TemplateProfileDto> dtos = entities.stream()
+                .map(entity -> {
+                    // Map OmMsgTemplateEntity to TemplateProfileDto here
+                    TemplateProfileDto dto = new TemplateProfileDto();
+                    dto.setTemplateName(entity.getObjectName());
+                    // Map other properties
+                    return dto;
+                })
+                .collect(Collectors.toList());
+        return dtos;
+    }
+}
+```
+
+3. Create a Controller class to define the endpoint and use the service:
+
+```java
+@RestController
+@RequestMapping("/api/templates")
+public class TemplateProfileController {
+
+    @Autowired
+    private TemplateProfileService templateProfileService;
+
+    @GetMapping("/profile")
+    public List<TemplateProfileDto> getTemplateProfiles(@RequestParam("templateName") String templateName,
+                                                       @RequestParam("templateVersionNr") String templateVersionNr) {
+        List<TemplateProfileDto> dtos = templateProfileService.getTemplateProfileDtos(templateName, templateVersionNr);
+        return dtos;
+    }
+}
+```
+
+4. Configure your Spring Boot application to scan for these components. Make sure to configure your database connection and repository properly in your application's properties or configuration class.
+
+With these classes in place, you can now access the `/api/templates/profile` endpoint, passing `templateName` and `templateVersionNr` as request parameters to retrieve a list of `TemplateProfileDto` objects. You'll need to implement the mapping logic from `OmMsgTemplateEntity` to `TemplateProfileDto` in the service c
