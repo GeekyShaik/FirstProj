@@ -1,104 +1,327 @@
-To create a Spring Boot controller and service class to expose an endpoint that maps DTOs and returns a `List<TemplateProfileDto>`, you can follow these steps:
+buildscript {
+    ext {
+        springBootVersion = '3.1.0'
+    }
 
-1. Create the `TemplateProfileDto` class if it doesn't already exist.
+    repositories {
+        ["mvn-remote-central",
+         "mvn-remote-gradle-plugins",
+         "usaa-mvn-internal-managed"].each { repo ->
+            maven {
+                credentials {
+                    username = "${maven_user}"
+                    password = "${maven_pass}"
+                }
+                url "https://repo.usaa.com/artifactory/$repo"
+            }
+        }
+        maven { url "https://repo.usaa.com/artifactory/usaa-mvn-internal" }
+    }
 
-2. Create a Service class to handle the logic for retrieving and mapping the data. Here's an example:
+    //There is a better way in spring boot to resolve dependencies with vulnerabilities using gradle native solution.
+    //Please follow the link below for suggested changes for springboot project:
+    //https://prodgitlab.usaa.com/grp-pi-blueprint/blueprint/-/merge_requests/484#note_3798191
+    dependencies {
+        classpath "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:3.3"
+        classpath "org.sonarsource.scanner.api:sonar-scanner-api:2.16.2.588"
 
-```java
-@Service
-public class TemplateProfileService {
+        classpath "com.github.ben-manes:gradle-versions-plugin:0.44.0"
+        classpath "io.freefair.gradle:lombok-plugin:8.1.0"
+        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4.31.0"
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion"
 
-    @Autowired
-    private OmMessageTemplateRepository omMessageTemplateRepository;
+        classpath "com.usaa.grp-pi-gradle:build-defaults-plugin:2.5.0"
+        classpath "com.usaa.grp-pi-gradle:sonarqube-quality-gates-plugin:2.4.1"
+        classpath "org.springdoc:springdoc-openapi-gradle-plugin:1.6.0"
 
-    public List<TemplateProfileDto> getTemplateProfileDtos(String templateName, String templateVersionNr) {
-        List<OmMsgTemplateEntity> entities = omMessageTemplateRepository.findByTemplateNameAndVersion(templateName, templateVersionNr);
-        List<TemplateProfileDto> dtos = entities.stream()
-                .map(entity -> {
-                    // Map OmMsgTemplateEntity to TemplateProfileDto here
-                    TemplateProfileDto dto = new TemplateProfileDto();
-                    dto.setTemplateName(entity.getObjectName());
-                    // Map other properties
-                    return dto;
-                })
-                .collect(Collectors.toList());
-        return dtos;
+        classpath "org.openapi.generator:org.openapi.generator.gradle.plugin:6.6.0"
+    }
+
+    // high license violation brought in by build-info-extractor
+    configurations.classpath {
+        exclude module: "xstream"
+        exclude module: "jna-platform"
+    }
+
+    //see https://wiki.usaa.com/x/nK14T option 2
+    configurations.all {
+        resolutionStrategy {
+            exclude(group: "org.apache.logging.log4j")
+        }
     }
 }
-```
 
-3. Create a Controller class to define the endpoint and use the service:
+apply plugin: 'build-defaults'
+apply plugin: 'com.github.ben-manes.versions'
+apply plugin: 'com.jfrog.artifactory'
+apply plugin: 'java'
+apply plugin: 'jacoco'
+apply plugin: 'org.sonarqube'
+apply plugin: 'sonarqube-quality-gates'
+apply plugin: 'maven-publish'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.freefair.lombok'
+apply plugin: 'io.spring.dependency-management'
+apply plugin: 'org.springdoc.openapi-gradle-plugin'
 
-```java
-@RestController
-@RequestMapping("/api/templates")
-public class TemplateProfileController {
-
-    @Autowired
-    private TemplateProfileService templateProfileService;
-
-    @GetMapping("/profile")
-    public List<TemplateProfileDto> getTemplateProfiles(@RequestParam("templateName") String templateName,
-                                                       @RequestParam("templateVersionNr") String templateVersionNr) {
-        List<TemplateProfileDto> dtos = templateProfileService.getTemplateProfileDtos(templateName, templateVersionNr);
-        return dtos;
+// Customize configuration to support Spring Boot devtools
+configurations {
+    developmentOnly
+    runtimeOnly {
+        extendsFrom developmentOnly
+    }
+    implementation {
+        // Exclude to resolve violations
+        exclude group: 'org.glassfish', module: 'jakarta.el' //Fixes issue with 3.0.3
+        exclude group: 'org.hibernate', module: 'hibernate-core' //Fixes issue with 5.4.32
     }
 }
-```
 
-4. Configure your Spring Boot application to scan for these components. Make sure to configure your database connection and repository properly in your application's properties or configuration class.
+repositories {
+    ["mvn-remote-central",
+     "usaa-mvn-internal-managed"].each { repo ->
+        maven {
+            credentials {
+                username = "${maven_user}"
+                password = "${maven_pass}"
+            }
+            url "https://repo.usaa.com/artifactory/$repo"
+        }
+    }
+    maven { url "https://repo.usaa.com/artifactory/usaa-mvn-internal" }
+}
 
-With these classes in place, you can now access the `/api/templates/profile` endpoint, passing `templateName` and `templateVersionNr` as request parameters to retrieve a list of `TemplateProfileDto` objects. You'll need to implement the mapping logic from `OmMsgTemplateEntity` to `TemplateProfileDto` in the service class based on your specific requirements.
+ext {
+    lombokVersion = '1.18.28'
+}
 
-
-To create a Spring Boot controller and service class to expose an endpoint that maps DTOs and returns a `List<TemplateProfileDto>`, you can follow these steps:
-
-1. Create the `TemplateProfileDto` class if it doesn't already exist.
-
-2. Create a Service class to handle the logic for retrieving and mapping the data. Here's an example:
-
-```java
-@Service
-public class TemplateProfileService {
-
-    @Autowired
-    private OmMessageTemplateRepository omMessageTemplateRepository;
-
-    public List<TemplateProfileDto> getTemplateProfileDtos(String templateName, String templateVersionNr) {
-        List<OmMsgTemplateEntity> entities = omMessageTemplateRepository.findByTemplateNameAndVersion(templateName, templateVersionNr);
-        List<TemplateProfileDto> dtos = entities.stream()
-                .map(entity -> {
-                    // Map OmMsgTemplateEntity to TemplateProfileDto here
-                    TemplateProfileDto dto = new TemplateProfileDto();
-                    dto.setTemplateName(entity.getObjectName());
-                    // Map other properties
-                    return dto;
-                })
-                .collect(Collectors.toList());
-        return dtos;
+// separate our integration tests into a separate source set
+sourceSets {
+    integrationTest {
+        java {
+            compileClasspath += (main.output + test.output)
+            runtimeClasspath += (main.output + test.output)
+            srcDirs = [file('src/integration-test/java')]
+        }
+        resources.srcDirs = [file('src/integration-test/resources')]
     }
 }
-```
 
-3. Create a Controller class to define the endpoint and use the service:
-
-```java
-@RestController
-@RequestMapping("/api/templates")
-public class TemplateProfileController {
-
-    @Autowired
-    private TemplateProfileService templateProfileService;
-
-    @GetMapping("/profile")
-    public List<TemplateProfileDto> getTemplateProfiles(@RequestParam("templateName") String templateName,
-                                                       @RequestParam("templateVersionNr") String templateVersionNr) {
-        List<TemplateProfileDto> dtos = templateProfileService.getTemplateProfileDtos(templateName, templateVersionNr);
-        return dtos;
+configurations {
+    integrationTestCompile.extendsFrom testCompile
+    integrationTestRuntime.extendsFrom testRuntime
+    developmentOnly
+    runtimeClasspath {
+        extendsFrom developmentOnly
     }
 }
-```
 
-4. Configure your Spring Boot application to scan for these components. Make sure to configure your database connection and repository properly in your application's properties or configuration class.
+// The bootrun gradle task generate a java cmd with each dependent jar listed separately. On windows, this
+// generated command can exceed the maximum 32,767 character length. the bootRunWin command will create a jar with a
+// manifest file listing all dependent jars, then include that single generated jar in the command line.
+// This is particularly useful when debugging in IntelliJ
+// more: https://tuhrig.de/gradles-bootrun-and-windows-command-length-limit/
+task pathingJar(type: Jar) {
+    dependsOn configurations.runtimeClasspath
+    appendix = 'pathing'
+    doFirst {
+        manifest {
+            attributes "Class-Path": configurations.runtimeClasspath.files.collect {
+                it.toURL().toString().replaceFirst(/file:\/+/, '/')
+            }.join(' ')
+        }
+    }
+}
 
-With these classes in place, you can now access the `/api/templates/profile` endpoint, passing `templateName` and `templateVersionNr` as request parameters to retrieve a list of `TemplateProfileDto` objects. You'll need to implement the mapping logic from `OmMsgTemplateEntity` to `TemplateProfileDto` in the service c
+task bootRunWin(type: org.springframework.boot.gradle.tasks.run.BootRun) {
+    dependsOn build
+    dependsOn pathingJar
+    doFirst() {
+        mainClass.set(bootJar.mainClass)
+        classpath = files(sourceSets.main.output.files, pathingJar.archivePath)
+        systemProperties = System.properties // support passing -Dsystem.property=value to bootRun task
+    }
+}
+
+bootRun {
+    systemProperties = System.properties // support passing -Dsystem.property=value to bootRun task
+}
+
+//See: https://prodgitlab.usaa.com/grp-pi-api-community/usaa-spring-boot-bom
+dependencyManagement {
+    imports {
+        mavenBom("com.usaa.grp-pi-api-community:usaa-spring-boot-bom:${springBootVersion}-1")
+    }
+}
+
+jar {
+    enabled = false
+}
+
+dependencies {
+    //Docs: https://docs.gradle.org/current/userguide/artifact_dependencies_tutorial.html
+
+    implementation "com.squareup.okio:okio:3.4.0"
+    implementation "org.apache.tomcat.embed:tomcat-embed-core:10.1.11"
+    implementation "javax.annotation:jsr250-api:1.0"
+
+    // Spring Boot dependencies
+    implementation "org.springframework.boot:spring-boot-starter"
+    implementation "org.springframework.boot:spring-boot-starter-web"
+    implementation "org.springframework.boot:spring-boot-starter-json"
+
+    // Spring security within USAA environment
+    implementation "com.usaa.grp-usaa-spring-security:usaa-security-spring-boot-starter"
+    testImplementation "com.usaa.grp-usaa-spring-security:usaa-spring-security-test"
+    implementation "org.springframework.boot:spring-boot-starter-security"
+
+    // Required for health endpoints
+    implementation "org.springframework.boot:spring-boot-starter-actuator"
+
+    // Used for Prometheus monitoring
+    implementation "io.micrometer:micrometer-registry-prometheus"
+    implementation "com.usaa.grp-pi-api-community:usaa-opentelemetry-spring-boot-starter"
+    implementation "com.usaa.grp-pi-api-community:usaa-opentelemetry-logging-spring-boot-starter"
+
+    //SpringDoc OpenAPI
+    implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0"
+
+    //Swagger
+    implementation "com.usaa.grp-usaa-spring-shared:usaa-swagger-spring-boot-starter:3.0.3"
+    implementation "org.springframework.boot:spring-boot-starter-validation"
+    implementation "io.swagger.parser.v3:swagger-parser:2.1.16"
+
+    // ELK-friendly logging
+    implementation "com.usaa.spring:usaa-logging-spring-boot-starter:1.0.0"
+
+    // For access logs
+    implementation "dev.akkinoc.spring.boot:logback-access-spring-boot-starter:4.0.0"
+
+    // Provides JUnit, Spring Test, AssertJ, Hamcrest, Mockito, JSONassert, & JsonPath
+    testImplementation "org.springframework.boot:spring-boot-starter-test:$springBootVersion"
+
+    // Spring Boot's devtools to improve developer experience
+    developmentOnly "org.springframework.boot:spring-boot-devtools"
+
+    implementation "net.minidev:json-smart:2.4.11" //Fixes issue with 2.3.1
+
+    //More Testing
+    testImplementation "org.powermock:powermock-module-junit4-rule:2.0.9"
+
+    //Rest Client
+    implementation "com.usaa.grp-usaa-spring-shared:usaa-spring-boot-rest-client-starter:5.1.0"
+
+    //Conjur
+    implementation "com.usaa.grp-usaa-spring-shared:usaa-conjur-spring-boot-starter:3.0.1"
+    implementation "org.apache.cxf:cxf-rt-rs-client:4.0.2"
+
+    //WebFlux
+    implementation "org.springframework.boot:spring-boot-starter-webflux"
+    implementation "org.springframework:spring-webflux"
+
+    //Hibernate
+    implementation "org.hibernate:hibernate-core:6.1.5.Final"
+
+    //Jakarta
+    implementation "jakarta.annotation:jakarta.annotation-api:2.0.0"
+
+    //Snake Yaml
+    implementation "org.yaml:snakeyaml:2.0"
+
+    //Mapstruct
+    annotationProcessor "org.mapstruct:mapstruct-processor:1.5.2.Final"
+    compileOnly "org.mapstruct:mapstruct-processor:1.5.2.Final"
+    implementation "org.mapstruct:mapstruct:1.5.2.Final"
+    testAnnotationProcessor "org.mapstruct:mapstruct-processor:1.5.2.Final"
+
+    //see https://wiki.usaa.com/x/nK14T option 2
+    configurations.all {
+        resolutionStrategy {
+            exclude(group: "org.apache.logging.log4j")
+
+            // Removal of Java EE to migrate to Jakarta EE
+            exclude(group: "javax.annotation")
+            exclude(group: "javax.ws.rs")
+            exclude(group: "javax.cache")
+            exclude(group: "javax.validation")
+            exclude(group: "javax.activation")
+            exclude(group: "javax.xml.bind")
+        }
+    }
+}
+
+publishing {
+    publications {
+        bootJava(MavenPublication) {
+            from components.java
+            artifact bootJar
+        }
+    }
+}
+
+artifactory {
+    publish {
+        repoKey=version.endsWith("SNAPSHOT") ? "usaa-mvn-internal-managed-snapshots" : "usaa-mvn-internal-managed"
+        username = "${maven_user}"
+        password = "${maven_pass}"
+        defaults {
+            properties = ['artifactory.licenses': 'USAA-Internal']
+
+            publications ('bootJava')
+        }
+    }
+}
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events = ['FAILED', 'SKIPPED']
+        exceptionFormat = 'full'
+    }
+}
+
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            element = "CLASS"
+            limit {
+                counter = "LINE"
+                minimum = 0.80
+                value = "COVEREDRATIO"
+            }
+            excludes = [
+                    "com.usaa.ent.apis.dtos.*",
+                    "com.usaa.ent.V1AuthoringPublicApisApplication",
+                    "com.usaa.ent.apis.mappers.*",
+                    "com.usaa.ent.config.*",
+                    "com.usaa.ent.apis.services.*",
+                    "com.usaa.ent.apis.constants.*",
+                    "com.usaa.ent.apis.exception.*",
+            ]
+        }
+    }
+}
+
+check.dependsOn(jacocoTestCoverageVerification)
+jacocoTestReport {
+    dependsOn test
+    reports {
+        xml.enabled true
+    }
+}
+test.finalizedBy(project.tasks.jacocoTestReport)
+
+dependencyUpdates {
+    revision = "release"
+    outputDir = project.buildDir.toString() + "/reports/dependency-updates"
+    outputFormatter = "test,json"
+}
+
+allprojects {
+    apply plugin: 'maven-publish'
+    apply plugin: 'com.jfrog.artifactory'
+}
+
+springBoot {
+    buildInfo()
+}
