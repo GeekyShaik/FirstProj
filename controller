@@ -1,1 +1,4 @@
 http://localhost:8080/templates/retrieve?templateName={templateName}&templateVersion={templateVersion
+
+Starting embedded database: url='jdbc:h2:mem:devdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false', username='sa'
+2023-11-10T03:58:11.128-06:00  INFO {} 15972 --- [  restartedMain] o.s.b.a.h2.H2ConsoleAutoConfiguration    : H2 console available at '/h2-console'. Database available at 'jdbc:h2:mem:devdb'
