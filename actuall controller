@@ -1,56 +1,19 @@
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import java.util.List;
-import java.util.stream.Collectors;
+GroupDefinitionsObject
+Search by: 
+from tables: OM_GROUP_DEFINITION, OM_GROUP_TEMPLATE_RLTN
 
-@Service
-public class TemplateProfileService {
+select all from OM_GROUP_TEMPLATE_RLTN  (name and version)
 
-    @Autowired
-    private OmMessageTemplateRepository templateRepository;
+join based on grp namd and var repo name with  OM_GROUP_DEFINITION
 
-    @Autowired
-    private ModelMapper modelMapper;
+"variableRepositoryName": to be added
 
-    public List<TemplateProfileDto> getTemplatesByNameAndVersion(String templateName, String templateVersion) {
-        List<OmMsgTemplateEntity> entities = templateRepository.findByTemplateNameAndVersion(templateName, templateVersion);
-        
-        // Use ModelMapper to map the list of entities to DTOs
-        List<TemplateProfileDto> dtos = entities.stream()
-                .map(entity -> modelMapper.map(entity, TemplateProfileDto.class))
-                .collect(Collectors.toList());
-
-        return dtos;
-    }
-}
-===================================================
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
-
-@RestController
-@RequestMapping("/templates")
-public class TemplateProfileController {
-    @Autowired
-    private TemplateProfileService templateService;
-
-    @GetMapping("/retrieve")
-    public ResponseEntity<List<TemplateProfileDto>> getTemplatesByNameAndVersion(
-            @RequestParam String templateName,
-            @RequestParam String templateVersion
-    ) {
-        List<TemplateProfileDto> templates = templateService.getTemplatesByNameAndVersion(templateName, templateVersion);
-
-        if (templates.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        } else {
-            return ResponseEntity.ok(templates);
-        }
-    }
-}
+    "parentGroupNm": String
+    "minimumOccurQty": Integer
+    "maximumOccurQty": Integer
+    "groupCommentTxt":
+    "logicalDeleteInd":
+    "lastUpdatePartyTdId":
+    "lastUpdatePartyIdTypeCd":
+    "lastUpdateGmts":
+    "groupLabelTxt":
