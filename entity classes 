@@ -1,0 +1,139 @@
+Certainly! Below are the modified entity classes with the `@Column` annotations including column definitions:
+
+### OMVariableDefinition Entity Class:
+
+```java
+import javax.persistence.*;
+import java.sql.Timestamp;
+
+@Entity
+@Table(name = "OM_VARIABLE_DEFINITION")
+public class OMVariableDefinition {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID")
+    private Long id;
+
+    @Column(name = "VARIABLE_REPOSITORY_NM", nullable = false, columnDefinition = "VARCHAR2(30)")
+    private String variableRepositoryName;
+
+    @Column(name = "GROUP_NM", nullable = false, columnDefinition = "VARCHAR2(50)")
+    private String groupNm;
+
+    @Column(name = "VARIABLE_NM", nullable = false, columnDefinition = "VARCHAR2(50)")
+    private String variableNm;
+
+    @Column(name = "COMMENT_TXT", columnDefinition = "VARCHAR2(250)")
+    private String commentTxt;
+
+    @Column(name = "VARIABLE_LABEL_TXT", columnDefinition = "VARCHAR2(50)")
+    private String variableLabelTxt;
+
+    @Column(name = "DATA_TYPE_CD", columnDefinition = "CHAR(2)")
+    private String dataTypeCd;
+
+    @Column(name = "EDIT_RULE_TYPE_CD", columnDefinition = "CHAR(2)")
+    private String editRuleTypeCd;
+
+    @Column(name = "EDIT_RULE_VALUE_TXT", columnDefinition = "VARCHAR2(150)")
+    private String editRuleValueTxt;
+
+    @Column(name = "MINIMUM_VARIABLE_LENGTH_QTY")
+    private Integer minimumVariableLengthQty;
+
+    @Column(name = "MAXIMUM_VARIABLE_LENGTH_QTY")
+    private Integer maximumVariableLengthQty;
+
+    @Column(name = "SCALE_POSITION_QTY", columnDefinition = "CHAR(1)")
+    private String scalePositionQty;
+
+    @Column(name = "DEFAULT_VALUE_TXT", columnDefinition = "VARCHAR2(50)")
+    private String defaultValueTxt;
+
+    @Column(name = "SAMPLE_DEFAULT_VALUE_TXT", columnDefinition = "VARCHAR2(50)")
+    private String sampleDefaultValueTxt;
+
+    @Column(name = "UI_WIDGET_CD", columnDefinition = "CHAR(2)")
+    private String uiWidgetCd;
+
+    @Column(name = "EDIT_RULE_CASE_SENSITIVE_IND", columnDefinition = "CHAR(1)")
+    private String editRuleCaseSensitiveInd;
+
+    @Column(name = "UPPER_CASE_IND", columnDefinition = "CHAR(1)")
+    private String upperCaseInd;
+
+    @Column(name = "WIDGET_PLACEMENT_CD", columnDefinition = "CHAR(1)")
+    private String widgetPlacementCd;
+
+    @Column(name = "AFTER_FIELD_LABEL_TXT", columnDefinition = "VARCHAR2(30)")
+    private String afterFieldLabelTxt;
+
+    @Column(name = "LOGICAL_DELETE_IND", columnDefinition = "CHAR(1)")
+    private String logicalDeleteInd;
+
+    @Column(name = "LAST_UPDATE_PARTY_TD_ID", columnDefinition = "CHAR(9)")
+    private String lastUpdatePartyTdId;
+
+    @Column(name = "LAST_UPDATE_PARTY_ID_TYPE_CD", columnDefinition = "CHAR(4)")
+    private String lastUpdatePartyIdTypeCd;
+
+    @Column(name = "LAST_UPDATE_GMTS")
+    private Timestamp lastUpdateGmts;
+
+    @Column(name = "DML_TIMESTAMP", nullable = false)
+    private Timestamp dmlTimestamp;
+
+    // Getters and setters...
+}
+```
+
+### OMVariableTemplateRelation Entity Class:
+
+```java
+import javax.persistence.*;
+import java.sql.Timestamp;
+
+@Entity
+@Table(name = "OM_VARIABLE_TEMPLATE_RLTN")
+public class OMVariableTemplateRelation {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID")
+    private Long id;
+
+    @Column(name = "OM_TEMPLATE_NM", nullable = false, columnDefinition = "VARCHAR2(30)")
+    private String omTemplateNm;
+
+    @Column(name = "OM_TEMPLATE_VERSION_NR", nullable = false)
+    private Integer omTemplateVersionNr;
+
+    @Column(name = "GROUP_NM", nullable = false, columnDefinition = "VARCHAR2(50)")
+    private String groupNm;
+
+    @Column(name = "VARIABLE_NM", nullable = false, columnDefinition = "VARCHAR2(50)")
+    private String variableNm;
+
+    @Column(name = "REQUIRED_IND", columnDefinition = "CHAR(1)")
+    private String requiredInd;
+
+    @Column(name = "DISPLAY_MODE_CD", columnDefinition = "CHAR(1)")
+    private String displayModeCd;
+
+    @Column(name = "OVERRIDE_COMMENT_TXT", columnDefinition = "VARCHAR2(250)")
+    private String overrideCommentTxt;
+
+    @Column(name = "OVERRIDE_LABEL_TXT", columnDefinition = "VARCHAR2(50)")
+    private String overrideLabelTxt;
+
+    @Column(name = "VARIABLE_SEQUENCE_NR")
+    private Integer variableSequenceNr;
+
+    @Column(name = "VARIABLE_LOCATION_CD", columnDefinition = "CHAR(2)")
+    private String variableLocationCd;
+
+    @Column(name = "OVERRIDE_DEFAULT_VALUE_TXT", columnDefinition = "VARCHAR2(120)")
+    private String overrideDefaultValueTxt;
+
+    @Column(name = "LOGICAL_DELETE_IND", columnDefinition = "CHAR(1
