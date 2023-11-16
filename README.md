@@ -1,35 +1,43 @@
-VariableDefinitionsObject
-Search by: name and version associations - join on group name, var name, var repo
-from tables: OM_VARIABLE_DEFINITION, OM_VARIABLE_TEMPLATE_RLTN
+Certainly! You can add a custom query method to your Spring Data JPA repository interfaces to implement the specific query you've discussed earlier. Here's how you can modify the repository interfaces:
 
+```java
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
-pull all OM_VARIABLE_DEFINITION first
-then all from OM_VARIABLE_TEMPLATE_RLTN (name and version) join with OM_VARIABLE_DEFINITION
+import java.util.List;
 
-list all uniques, remove dupes
-master list of this join
+public interface OMVariableDefinitionRepository extends JpaRepository<OMVariableDefinition, Long> {
 
-    "variableRepositoryName": add to om var temp rrltn and om group templ rlt
+    @Query("SELECT DISTINCT ovd.variableRepositoryName " +
+            "FROM OMVariableDefinition ovd " +
+            "LEFT JOIN OMVariableTemplateRelation ovtr ON ovd.groupNm = ovtr.groupNm " +
+            "AND ovd.variableNm = ovtr.variableNm " +
+            "AND ovd.variableRepositoryName = ovtr.variableRepositoryName")
+    List<String> findDistinctVariableRepositoryNames();
+    
+    // Add other custom queries if needed
+}
+```
 
+```java
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
-    "groupName":
-    "variableName":
-    "commentTxt":
-    "variableLabelTxt":
-    "datatypeCd":
-    "editRuleTypeCD":
-    "editRuleValueTxt":
-    "minimumVariableLengthQty": Integer
-    "maximumVariableLengthQty": Integer
-    "scalePositionQty":
-    "defaultValueTxt":
-    "sampleDefaultValueTxt":
-    "uiWidgetCd":
-    "editRuleCaseSensitiveInd":
-    "upperCaseInd":
-    "widgetPlacementCd":
-    "afterFieldLabelTxt":
-    "logicalDeleteInd":
-    "lastUpdatePartyTdId":
-    "lastUpdatePartyIdTypeCd":
-    "lastUpdateGmts":
+import java.util.List;
+
+public interface OMVariableTemplateRelationRepository extends JpaRepository<OMVariableTemplateRelation, Long> {
+
+    @Query("SELECT DISTINCT ovd.variableRepositoryName " +
+            "FROM OMVariableTemplateRelation ovtr " +
+            "LEFT JOIN OMVariableDefinition ovd ON ovtr.groupNm = ovd.groupNm " +
+            "AND ovtr.variableNm = ovd.variableNm " +
+            "AND ovtr.variableRepositoryName = ovd.variableRepositoryName")
+    List<String> findDistinctVariableRepositoryNames();
+    
+    // Add other custom queries if needed
+}
+```
+
+These custom queries use the `@Query` annotation with JPQL (Java Persistence Query Language) to express the logic of your specific query. These methods return a list of distinct `variableRepositoryName` values.
+
+Make sure to adapt the queries according to your specific needs and entity relationships.
