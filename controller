@@ -1,4 +1,55 @@
-http://localhost:8080/templates/retrieve?templateName={templateName}&templateVersion={templateVersion
+Search by: name and version associations - join on group_nm, variable_nm, variable_repository_nm
+from tables: OM_VARIABLE_DEFINITION, OM_VARIABLE_TEMPLATE_RLTN
 
-Starting embedded database: url='jdbc:h2:mem:devdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false', username='sa'
-2023-11-10T03:58:11.128-06:00  INFO {} 15972 --- [  restartedMain] o.s.b.a.h2.H2ConsoleAutoConfiguration    : H2 console available at '/h2-console'. Database available at 'jdbc:h2:mem:devdb'
+
+pull all OM_VARIABLE_DEFINITION first then all from OM_VARIABLE_TEMPLATE_RLTN (name and version) join with OM_VARIABLE_DEFINITION
+
+list all uniques, remove duplicates
+master list of this join
+
+    "variableRepositoryName": add to om var temp rrltn and om group templ rlt
+
+om_Authoring.om_Variable_definition
+
+VARIABLE_REPOSITORY_NM       NOT NULL VARCHAR2(30)  
+GROUP_NM                     NOT NULL VARCHAR2(50)  
+VARIABLE_NM                  NOT NULL VARCHAR2(50)  
+COMMENT_TXT                           VARCHAR2(250) 
+VARIABLE_LABEL_TXT                    VARCHAR2(50)  
+DATA_TYPE_CD                          CHAR(2)       
+EDIT_RULE_TYPE_CD                     CHAR(2)       
+EDIT_RULE_VALUE_TXT                   VARCHAR2(150) 
+MINIMUM_VARIABLE_LENGTH_QTY           NUMBER(3)     
+MAXIMUM_VARIABLE_LENGTH_QTY           NUMBER(5)     
+SCALE_POSITION_QTY                    CHAR(1)       
+DEFAULT_VALUE_TXT                     VARCHAR2(50)  
+SAMPLE_DEFAULT_VALUE_TXT              VARCHAR2(50)  
+UI_WIDGET_CD                          CHAR(2)       
+EDIT_RULE_CASE_SENSITIVE_IND          CHAR(1)       
+UPPER_CASE_IND                        CHAR(1)       
+WIDGET_PLACEMENT_CD                   CHAR(1)       
+AFTER_FIELD_LABEL_TXT                 VARCHAR2(30)  
+LOGICAL_DELETE_IND                    CHAR(1)       
+LAST_UPDATE_PARTY_TD_ID               CHAR(9)       
+LAST_UPDATE_PARTY_ID_TYPE_CD          CHAR(4)       
+LAST_UPDATE_GMTS                      TIMESTAMP(6)  
+DML_TIMESTAMP                NOT NULL TIMESTAMP(6) 
+==========================================================================
+desc om_Authoring.OM_VARIABLE_TEMPLATE_RLTN
+
+OM_TEMPLATE_NM             NOT NULL VARCHAR2(30)  
+OM_TEMPLATE_VERSION_NR     NOT NULL NUMBER(4)     
+GROUP_NM                   NOT NULL VARCHAR2(50)  
+VARIABLE_NM                NOT NULL VARCHAR2(50)  
+REQUIRED_IND                        CHAR(1)       
+DISPLAY_MODE_CD                     CHAR(1)       
+OVERRIDE_COMMENT_TXT                VARCHAR2(250) 
+OVERRIDE_LABEL_TXT                  VARCHAR2(50)  
+VARIABLE_SEQUENCE_NR                NUMBER(4)     
+VARIABLE_LOCATION_CD                CHAR(2)       
+OVERRIDE_DEFAULT_VALUE_TXT          VARCHAR2(120) 
+LOGICAL_DELETE_IND                  CHAR(1)       
+EDIT_RULE_TYPE_CD                   CHAR(2)       
+EDIT_RULE_VALUE_TXT                 VARCHAR2(150) 
+DML_TIMESTAMP              NOT NULL TIMESTAMP(6)  
+VARIABLE_REPOSITORY_NM              VARCHAR2(30)  
