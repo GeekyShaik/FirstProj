@@ -68,3 +68,56 @@ Certainly! Let's break down the SQL query based on the conditions you provided:
 
 In summary, this query retrieves a list of distinct records that result from combining columns from both `OM_VARIABLE_DEFINITION` and `OM_VARIABLE_TEMPLATE_RLTN` tables based on specified join conditions. The result includes all columns from both tables. Adjustments can be made based on additional requirements or specific preferences.
 
+updated db query
+
+I apologize for any confusion. It seems there was an oversight in the initial query, and I appreciate your patience. I'll provide an updated query that includes all columns from both `OM_VARIABLE_DEFINITION` and `OM_VARIABLE_TEMPLATE_RLTN`. 
+
+```sql
+SELECT DISTINCT
+    ovd.VARIABLE_REPOSITORY_NM AS variableRepositoryName,
+    ovd.GROUP_NM,
+    ovd.VARIABLE_NM,
+    ovd.COMMENT_TXT,
+    ovd.VARIABLE_LABEL_TXT,
+    ovd.DATA_TYPE_CD,
+    ovd.EDIT_RULE_TYPE_CD,
+    ovd.EDIT_RULE_VALUE_TXT,
+    ovd.MINIMUM_VARIABLE_LENGTH_QTY,
+    ovd.MAXIMUM_VARIABLE_LENGTH_QTY,
+    ovd.SCALE_POSITION_QTY,
+    ovd.DEFAULT_VALUE_TXT,
+    ovd.SAMPLE_DEFAULT_VALUE_TXT,
+    ovd.UI_WIDGET_CD,
+    ovd.EDIT_RULE_CASE_SENSITIVE_IND,
+    ovd.UPPER_CASE_IND,
+    ovd.WIDGET_PLACEMENT_CD,
+    ovd.AFTER_FIELD_LABEL_TXT,
+    ovd.LOGICAL_DELETE_IND,
+    ovd.LAST_UPDATE_PARTY_TD_ID,
+    ovd.LAST_UPDATE_PARTY_ID_TYPE_CD,
+    ovd.LAST_UPDATE_GMTS,
+    ovd.DML_TIMESTAMP,
+    ovtr.OM_TEMPLATE_NM,
+    ovtr.OM_TEMPLATE_VERSION_NR,
+    ovtr.GROUP_NM AS templateGroupNm,
+    ovtr.REQUIRED_IND,
+    ovtr.DISPLAY_MODE_CD,
+    ovtr.OVERRIDE_COMMENT_TXT,
+    ovtr.OVERRIDE_LABEL_TXT,
+    ovtr.VARIABLE_SEQUENCE_NR,
+    ovtr.VARIABLE_LOCATION_CD,
+    ovtr.OVERRIDE_DEFAULT_VALUE_TXT,
+    ovtr.LOGICAL_DELETE_IND AS templateLogicalDeleteInd,
+    ovtr.EDIT_RULE_TYPE_CD AS templateEditRuleTypeCd,
+    ovtr.EDIT_RULE_VALUE_TXT AS templateEditRuleValueTxt,
+    ovtr.DML_TIMESTAMP AS templateDmlTimestamp
+FROM
+    OM_VARIABLE_DEFINITION ovd
+LEFT JOIN
+    OM_VARIABLE_TEMPLATE_RLTN ovtr ON ovd.GROUP_NM = ovtr.GROUP_NM
+                                     AND ovd.VARIABLE_NM = ovtr.VARIABLE_NM
+                                     AND ovd.VARIABLE_REPOSITORY_NM = ovtr.VARIABLE_REPOSITORY_NM;
+```
+
+This revised query should include all columns from both tables. I've also renamed some columns in the `OM_VARIABLE_TEMPLATE_RLTN` part of the query to avoid naming conflicts with columns from `OM_VARIABLE_DEFINITION`. Please adjust it further based on your specific requirements.
+
