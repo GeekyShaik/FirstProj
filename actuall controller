@@ -1,19 +1,70 @@
-GroupDefinitionsObject
-Search by: 
-from tables: OM_GROUP_DEFINITION, OM_GROUP_TEMPLATE_RLTN
+SELECT DISTINCT
+    ovd.VARIABLE_REPOSITORY_NM AS variableRepositoryName,
+    ovd.GROUP_NM,
+    ovd.VARIABLE_NM,
+    ovd.COMMENT_TXT,
+    ovd.VARIABLE_LABEL_TXT,
+    ovd.DATA_TYPE_CD,
+    ovd.EDIT_RULE_TYPE_CD,
+    ovd.EDIT_RULE_VALUE_TXT,
+    ovd.MINIMUM_VARIABLE_LENGTH_QTY,
+    ovd.MAXIMUM_VARIABLE_LENGTH_QTY,
+    ovd.SCALE_POSITION_QTY,
+    ovd.DEFAULT_VALUE_TXT,
+    ovd.SAMPLE_DEFAULT_VALUE_TXT,
+    ovd.UI_WIDGET_CD,
+    ovd.EDIT_RULE_CASE_SENSITIVE_IND,
+    ovd.UPPER_CASE_IND,
+    ovd.WIDGET_PLACEMENT_CD,
+    ovd.AFTER_FIELD_LABEL_TXT,
+    ovd.LOGICAL_DELETE_IND,
+    ovd.LAST_UPDATE_PARTY_TD_ID,
+    ovd.LAST_UPDATE_PARTY_ID_TYPE_CD,
+    ovd.LAST_UPDATE_GMTS,
+    ovd.DML_TIMESTAMP,
+    ovtr.OM_TEMPLATE_NM,
+    ovtr.OM_TEMPLATE_VERSION_NR,
+    ovtr.REQUIRED_IND,
+    ovtr.DISPLAY_MODE_CD,
+    ovtr.OVERRIDE_COMMENT_TXT,
+    ovtr.OVERRIDE_LABEL_TXT,
+    ovtr.VARIABLE_SEQUENCE_NR,
+    ovtr.VARIABLE_LOCATION_CD,
+    ovtr.OVERRIDE_DEFAULT_VALUE_TXT,
+    ovtr.LOGICAL_DELETE_IND AS templateLogicalDeleteInd
+FROM
+    OM_VARIABLE_DEFINITION ovd
+LEFT JOIN
+    OM_VARIABLE_TEMPLATE_RLTN ovtr ON ovd.GROUP_NM = ovtr.GROUP_NM
+                                     AND ovd.VARIABLE_NM = ovtr.VARIABLE_NM
+                                     AND ovd.VARIABLE_REPOSITORY_NM = ovtr.VARIABLE_REPOSITORY_NM;This query includes all columns from both OM_VARIABLE_DEFINITION and OM_VARIABLE_TEMPLATE_RLTN tables and uses the DISTINCT keyword to remove duplicate records from the result set. Adjust it further based on your specific needs.
 
-select all from OM_GROUP_TEMPLATE_RLTN  (name and version)
 
-join based on grp namd and var repo name with  OM_GROUP_DEFINITION
 
-"variableRepositoryName": to be added
 
-    "parentGroupNm": String
-    "minimumOccurQty": Integer
-    "maximumOccurQty": Integer
-    "groupCommentTxt":
-    "logicalDeleteInd":
-    "lastUpdatePartyTdId":
-    "lastUpdatePartyIdTypeCd":
-    "lastUpdateGmts":
-    "groupLabelTxt":
+
+Certainly! Let's break down the SQL query based on the conditions you provided:
+
+1. **Selection of Columns:**
+   - The `SELECT DISTINCT` statement is used to retrieve distinct rows from the result set.
+
+2. **Columns from `OM_VARIABLE_DEFINITION` Table (`ovd` alias):**
+   - Columns from `OM_VARIABLE_DEFINITION` table are selected, including `VARIABLE_REPOSITORY_NM` (aliased as `variableRepositoryName`), `GROUP_NM`, `VARIABLE_NM`, and various other attributes.
+
+3. **Columns from `OM_VARIABLE_TEMPLATE_RLTN` Table (`ovtr` alias):**
+   - Columns from `OM_VARIABLE_TEMPLATE_RLTN` table are also selected, including `OM_TEMPLATE_NM`, `OM_TEMPLATE_VERSION_NR`, `REQUIRED_IND`, etc. Columns are matched with the corresponding columns in `OM_VARIABLE_DEFINITION` for the join conditions.
+
+4. **Join Conditions:**
+   - The `LEFT JOIN` is used to combine rows from `OM_VARIABLE_DEFINITION` (`ovd`) with matching rows from `OM_VARIABLE_TEMPLATE_RLTN` (`ovtr`). The joining is based on three conditions:
+     - `ovd.GROUP_NM = ovtr.GROUP_NM`
+     - `ovd.VARIABLE_NM = ovtr.VARIABLE_NM`
+     - `ovd.VARIABLE_REPOSITORY_NM = ovtr.VARIABLE_REPOSITORY_NM`
+
+5. **DISTINCT Keyword:**
+   - The `DISTINCT` keyword ensures that only unique combinations of the selected columns are included in the result set, removing any duplicates.
+
+6. **Aliases:**
+   - Aliases are used to provide more meaningful names for the columns, enhancing readability.
+
+In summary, this query retrieves a list of distinct records that result from combining columns from both `OM_VARIABLE_DEFINITION` and `OM_VARIABLE_TEMPLATE_RLTN` tables based on specified join conditions. The result includes all columns from both tables. Adjustments can be made based on additional requirements or specific preferences.
+
