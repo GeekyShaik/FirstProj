@@ -1,43 +1,40 @@
-Certainly! You can add a custom query method to your Spring Data JPA repository interfaces to implement the specific query you've discussed earlier. Here's how you can modify the repository interfaces:
+Search by: 
+from tables: OM_GROUP_DEFINITION, OM_GROUP_TEMPLATE_RLTN
 
-```java
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
+select all from OM_GROUP_TEMPLATE_RLTN  (name and version)
 
-import java.util.List;
+join based on grp namd and var repo name with  OM_GROUP_DEFINITION
 
-public interface OMVariableDefinitionRepository extends JpaRepository<OMVariableDefinition, Long> {
+OM_GROUP_DEFINITION
+====================
 
-    @Query("SELECT DISTINCT ovd.variableRepositoryName " +
-            "FROM OMVariableDefinition ovd " +
-            "LEFT JOIN OMVariableTemplateRelation ovtr ON ovd.groupNm = ovtr.groupNm " +
-            "AND ovd.variableNm = ovtr.variableNm " +
-            "AND ovd.variableRepositoryName = ovtr.variableRepositoryName")
-    List<String> findDistinctVariableRepositoryNames();
-    
-    // Add other custom queries if needed
-}
-```
+VARIABLE_REPOSITORY_NM       NOT NULL VARCHAR2(30)  
+GROUP_NM                     NOT NULL VARCHAR2(50)  
+PARENT_GROUP_NM                       VARCHAR2(50)  
+MINIMUM_OCCUR_QTY                     NUMBER(3)     
+MAXIMUM_OCCUR_QTY                     NUMBER(3)     
+GROUP_COMMENT_TXT                     VARCHAR2(120) 
+LOGICAL_DELETE_IND                    CHAR(1)       
+LAST_UPDATE_PARTY_TD_ID               CHAR(9)       
+LAST_UPDATE_PARTY_ID_TYPE_CD          CHAR(4)       
+LAST_UPDATE_GMTS                      TIMESTAMP(6)  
+GROUP_LABEL_TXT                       VARCHAR2(50)  
+DML_TIMESTAMP                NOT NULL TIMESTAMP(6)  
 
-```java
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 
-import java.util.List;
 
-public interface OMVariableTemplateRelationRepository extends JpaRepository<OMVariableTemplateRelation, Long> {
+om_group_template_rltn
+========================
 
-    @Query("SELECT DISTINCT ovd.variableRepositoryName " +
-            "FROM OMVariableTemplateRelation ovtr " +
-            "LEFT JOIN OMVariableDefinition ovd ON ovtr.groupNm = ovd.groupNm " +
-            "AND ovtr.variableNm = ovd.variableNm " +
-            "AND ovtr.variableRepositoryName = ovd.variableRepositoryName")
-    List<String> findDistinctVariableRepositoryNames();
-    
-    // Add other custom queries if needed
-}
-```
-
-These custom queries use the `@Query` annotation with JPQL (Java Persistence Query Language) to express the logic of your specific query. These methods return a list of distinct `variableRepositoryName` values.
-
-Make sure to adapt the queries according to your specific needs and entity relationships.
+OM_TEMPLATE_NM         NOT NULL VARCHAR2(30)  
+OM_TEMPLATE_VERSION_NR NOT NULL NUMBER(4)     
+GROUP_NM               NOT NULL VARCHAR2(50)  
+MINIMUM_OCCUR_QTY               NUMBER(3)     
+MAXIMUM_OCCUR_QTY               NUMBER(3)     
+OVERRIDE_LABEL_TXT              VARCHAR2(50)  
+OVERRIDE_COMMENT_TXT            VARCHAR2(250) 
+LOGICAL_DELETE_IND              CHAR(1)       
+GROUP_LOCATION_CD               CHAR(2)       
+GROUP_SEQUENCE_NR               NUMBER(4)     
+DML_TIMESTAMP          NOT NULL TIMESTAMP(6)  
+VARIABLE_REPOSITORY_NM          VARCHAR2(30)  
