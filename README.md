@@ -1,53 +1,35 @@
-Search by: 
-from tables: OM_GROUP_DEFINITION, OM_GROUP_TEMPLATE_RLTN
+Certainly! Assuming you want to create custom queries for your repositories, you can add them as methods in the repository interfaces. Here's an example of adding custom queries for your provided tables:
 
-select all from OM_GROUP_TEMPLATE_RLTN  (name and version)
+```java
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
-join based on grp namd and var repo name with  OM_GROUP_DEFINITION
+public interface OmGroupDefinitionRepository extends JpaRepository<OmGroupDefinition, Long> {
+    
+    @Query("SELECT gd FROM OmGroupDefinition gd " +
+            "JOIN OmGroupTemplateRltn rt ON gd.groupNm = rt.groupNm " +
+            "AND gd.variableRepositoryNm = rt.variableRepositoryNm")
+    List<OmGroupDefinition> findAllWithTemplateRltn();
 
-OM_GROUP_DEFINITION
-====================
-
-VARIABLE_REPOSITORY_NM       NOT NULL VARCHAR2(30)  
-GROUP_NM                     NOT NULL VARCHAR2(50)  
-PARENT_GROUP_NM                       VARCHAR2(50)  
-MINIMUM_OCCUR_QTY                     NUMBER(3)     
-MAXIMUM_OCCUR_QTY                     NUMBER(3)     
-GROUP_COMMENT_TXT                     VARCHAR2(120) 
-LOGICAL_DELETE_IND                    CHAR(1)       
-LAST_UPDATE_PARTY_TD_ID               CHAR(9)       
-LAST_UPDATE_PARTY_ID_TYPE_CD          CHAR(4)       
-LAST_UPDATE_GMTS                      TIMESTAMP(6)  
-GROUP_LABEL_TXT                       VARCHAR2(50)  
-DML_TIMESTAMP                NOT NULL TIMESTAMP(6)  
-
-
-
-om_group_template_rltn
-========================
-
-OM_TEMPLATE_NM         NOT NULL VARCHAR2(30)  
-OM_TEMPLATE_VERSION_NR NOT NULL NUMBER(4)     
-GROUP_NM               NOT NULL VARCHAR2(50)  
-MINIMUM_OCCUR_QTY               NUMBER(3)     
-MAXIMUM_OCCUR_QTY               NUMBER(3)     
-OVERRIDE_LABEL_TXT              VARCHAR2(50)  
-OVERRIDE_COMMENT_TXT            VARCHAR2(250) 
-LOGICAL_DELETE_IND              CHAR(1)       
-GROUP_LOCATION_CD               CHAR(2)       
-GROUP_SEQUENCE_NR               NUMBER(4)     
-DML_TIMESTAMP          NOT NULL TIMESTAMP(6)  
-VARIABLE_REPOSITORY_NM          VARCHAR2(30)  
-
-
-Certainly! It seems like you want to perform a join between `OM_GROUP_TEMPLATE_RLTN` and `OM_GROUP_DEFINITION` based on the conditions of matching `GROUP_NM` and `VARIABLE_REPOSITORY_NM`. Here's a basic SQL query for your requirement:
-
-```sql
-SELECT *
-FROM OM_GROUP_TEMPLATE_RLTN RT
-JOIN OM_GROUP_DEFINITION GD
-ON RT.GROUP_NM = GD.GROUP_NM
-   AND RT.VARIABLE_REPOSITORY_NM = GD.VARIABLE_REPOSITORY_NM;
+    // You can add more custom queries as needed
+}
 ```
 
-This query selects all columns from both tables where the `GROUP_NM` and `VARIABLE_REPOSITORY_NM` match between the two tables. Adjust it based on your specific needs or add any additional conditions as necessary.
+```java
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+public interface OmGroupTemplateRltnRepository extends JpaRepository<OmGroupTemplateRltn, Long> {
+    
+    @Query("SELECT rt FROM OmGroupTemplateRltn rt " +
+            "JOIN OmGroupDefinition gd ON rt.groupNm = gd.groupNm " +
+            "AND rt.variableRepositoryNm = gd.variableRepositoryNm")
+    List<OmGroupTemplateRltn> findAllWithGroupDefinition();
+
+    // You can add more custom queries as needed
+}
+```
+
+These queries use JPQL (Java Persistence Query Language) to express the join condition between the two tables. Adjust the query as per your entity mappings and column names. Feel free to add more custom queries based on your specific requirements.
