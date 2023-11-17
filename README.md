@@ -38,3 +38,16 @@ GROUP_LOCATION_CD               CHAR(2)
 GROUP_SEQUENCE_NR               NUMBER(4)     
 DML_TIMESTAMP          NOT NULL TIMESTAMP(6)  
 VARIABLE_REPOSITORY_NM          VARCHAR2(30)  
+
+
+Certainly! It seems like you want to perform a join between `OM_GROUP_TEMPLATE_RLTN` and `OM_GROUP_DEFINITION` based on the conditions of matching `GROUP_NM` and `VARIABLE_REPOSITORY_NM`. Here's a basic SQL query for your requirement:
+
+```sql
+SELECT *
+FROM OM_GROUP_TEMPLATE_RLTN RT
+JOIN OM_GROUP_DEFINITION GD
+ON RT.GROUP_NM = GD.GROUP_NM
+   AND RT.VARIABLE_REPOSITORY_NM = GD.VARIABLE_REPOSITORY_NM;
+```
+
+This query selects all columns from both tables where the `GROUP_NM` and `VARIABLE_REPOSITORY_NM` match between the two tables. Adjust it based on your specific needs or add any additional conditions as necessary.
