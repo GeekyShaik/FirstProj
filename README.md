@@ -1,20 +1,17 @@
-@Service
-public class GroupDefinitionService {
+@RestController
+@RequestMapping("/group-definitions")
+public class GroupDefinitionController {
+
+    private final GroupDefinitionService groupDefinitionService;
 
     @Autowired
-    private OmGroupDefinitionRepository definitionRepository;
+    public GroupDefinitionController(GroupDefinitionService groupDefinitionService) {
+        this.groupDefinitionService = groupDefinitionService;
+    }
 
-    @Autowired
-    private ModelMapper modelMapper;
-
-    public List<GroupDefinitionsObjectDto> getAllWithTemplateRltn() {
-        List<OmGroupDefinition> entities = definitionRepository.findAllWithTemplateRltn();
-        // Use ModelMapper to map the list of entities to DTOs
-        List<GroupDefinitionsObjectDto> groupDefinitionsObjectDtoList = entities.stream()
-                .map(entity -> modelMapper.map(entity, GroupDefinitionsObjectDto.class))
-                .collect(Collectors.toList());
-
-        return groupDefinitionsObjectDtoList;
+    @GetMapping("/all-with-template")
+    public ResponseEntity<List<GroupDefinitionsObjectDto>> getAllWithTemplateRelation() {
+        List<GroupDefinitionsObjectDto> groupDefinitions = groupDefinitionService.getAllWithTemplateRltn();
+        return new ResponseEntity<>(groupDefinitions, HttpStatus.OK);
     }
 }
-
