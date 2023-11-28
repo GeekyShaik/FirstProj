@@ -42,3 +42,25 @@ public class TemplateProfileModelMapperConfig {
 
 }
 
+
+@Service
+public class TemplateProfileService {
+
+    @Autowired
+    private OmMessageTemplateRepository templateRepository;
+
+    @Autowired
+    private ModelMapper modelMapper;
+
+    public List<TemplateProfileDto> getTemplatesByNameAndVersion(String templateName, BigDecimal templateVersion) {
+        List<OmMsgTemplateEntity> entities = templateRepository.findTemplateProfile(templateName, templateVersion);
+//        OmMsgTemplateChannelEntity entity;
+        // Use ModelMapper to map the list of entities to DTOs
+        List<TemplateProfileDto> templateProfileDtoList = entities.stream()
+                .map(entity -> modelMapper.map(entity, TemplateProfileDto.class))
+                .collect(Collectors.toList());
+
+        return templateProfileDtoList;
+    }
+}
+
