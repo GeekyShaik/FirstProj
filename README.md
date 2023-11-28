@@ -1,37 +1,55 @@
-I appreciate your patience. It seems I made an error in my previous responses. I apologize for the confusion. If you want to inject the `ModelMapper` from `TemplateProfileModelMapperConfig`, you need to make sure that the `ModelMapper` bean is properly defined in that configuration class. Here is a corrected version:
+Certainly, if you have a custom `TemplateProfileModelMapperConfig` class, and you want to inject an instance of this configuration class into your service, you can follow these steps:
+
+Assuming your `TemplateProfileModelMapperConfig` looks like this:
 
 ```java
 @Configuration
 public class TemplateProfileModelMapperConfig {
 
     @Bean
-    public ModelMapper modelMapper() {
-        ModelMapper mapper = new ModelMapper();
-        // Your custom mappings here
-        return mapper;
+    public TemplateProfileModelMapper templateProfileModelMapper() {
+        return new TemplateProfileModelMapper();
     }
 }
+```
 
+And your custom mapper class `TemplateProfileModelMapper` extends `ModelMapper`:
+
+```java
+public class TemplateProfileModelMapper extends ModelMapper {
+
+    public TemplateProfileModelMapper() {
+        // Your custom mappings here
+    }
+}
+```
+
+You can then inject `TemplateProfileModelMapperConfig` into your service like this:
+
+```java
 @Service
 public class TemplateProfileService {
 
     private final OmMessageTemplateRepository templateRepository;
-    private final ModelMapper modelMapper;
+    private final TemplateProfileModelMapperConfig templateProfileModelMapperConfig;
 
     @Autowired
     public TemplateProfileService(
             OmMessageTemplateRepository templateRepository,
-            ModelMapper modelMapper) {
+            TemplateProfileModelMapperConfig templateProfileModelMapperConfig) {
         this.templateRepository = templateRepository;
-        this.modelMapper = modelMapper;
+        this.templateProfileModelMapperConfig = templateProfileModelMapperConfig;
     }
 
     public List<TemplateProfileDto> getTemplatesByNameAndVersion(String templateName, BigDecimal templateVersion) {
         List<OmMsgTemplateEntity> entities = templateRepository.findTemplateProfile(templateName, templateVersion);
 
-        // Use the injected ModelMapper bean
+        // Use the TemplateProfileModelMapperConfig to get the TemplateProfileModelMapper bean
+        TemplateProfileModelMapper templateProfileModelMapper = templateProfileModelMapperConfig.templateProfileModelMapper();
+
+        // Use the injected TemplateProfileModelMapper bean
         List<TemplateProfileDto> templateProfileDtoList = entities.stream()
-                .map(entity -> modelMapper.map(entity, TemplateProfileDto.class))
+                .map(entity -> templateProfileModelMapper.map(entity, TemplateProfileDto.class))
                 .collect(Collectors.toList());
 
         return templateProfileDtoList;
@@ -39,4 +57,4 @@ public class TemplateProfileService {
 }
 ```
 
-Ensure that the `TemplateProfileModelMapperConfig` class is properly scanned by Spring or included in your main application class annotated with `@SpringBootApplication`. This will allow Spring to create and manage the `ModelMapper` bean, making it available for injection into the `TemplateProfileService`.
+This way, you're injecting the `TemplateProfileModelMapperConfig` instance and then using it to obtain the `TemplateProfileModelMapper` bean, which you can use for mapping.
