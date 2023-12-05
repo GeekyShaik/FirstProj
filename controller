@@ -1,113 +1,121 @@
-OmGroupDefinition Entity and Composite Keyimport javax.persistence.*;
-import java.io.Serializable;
-import java.sql.Timestamp;
+global:
+  runtime:
+    ## Supported frameworks are "spring" and "jboss"
+    framework: spring
+    ## Context root for the application
+    contextRoot: "/v1/enterprise/metadata-services"
+    environment: "review"
 
-@Entity
-@IdClass(OmGroupDefinitionId.class)
-@Table(name = "OM_GROUP_DEFINITION")
-public class OmGroupDefinition implements Serializable {
-
-    @Id
-    @Column(name = "VARIABLE_REPOSITORY_NM")
-    private String variableRepositoryNm;
-
-    @Id
-    @Column(name = "GROUP_NM")
-    private String groupNm;
-
-    @Column(name = "PARENT_GROUP_NM")
-    private String parentGroupNm;
-
-    @Column(name = "MINIMUM_OCCUR_QTY")
-    private Integer minimumOccurQty;
-
-    @Column(name = "MAXIMUM_OCCUR_QTY")
-    private Integer maximumOccurQty;
-
-    @Column(name = "GROUP_COMMENT_TXT")
-    private String groupCommentTxt;
-
-    @Column(name = "LOGICAL_DELETE_IND", length = 1)
-    private String logicalDeleteInd;
-
-    @Column(name = "LAST_UPDATE_PARTY_ID")
-    private String lastUpdatePartyId;
-
-    @Column(name = "LAST_UPDATE_PARTY_ID_TYPE_CD")
-    private String lastUpdatePartyIdTypeCd;
-
-    @Column(name = "LAST_UPDATE_GMTS")
-    private Timestamp lastUpdateGmts;
-
-    @Column(name = "GROUP_LABEL_TXT")
-    private String groupLabelTxt;
-
-    @Column(name = "DML_TIMESTAMP")
-    private Timestamp dmlTimestamp;
-
-    // Getters and setters for all fields
-}
-
-public class OmGroupDefinitionId implements Serializable {
-    private String variableRepositoryNm;
-    private String groupNm;
-
-    // Getters, setters, equals, and hashCode methods
-}OmGroupTemplateRltn Entity and Composite Keyimport javax.persistence.*;
-import java.io.Serializable;
-import java.sql.Timestamp;
-
-@Entity
-@IdClass(OmGroupTemplateRltnId.class)
-@Table(name = "OM_GROUP_TEMPLATE_RLTN")
-public class OmGroupTemplateRltn implements Serializable {
-
-    @Id
-    @Column(name = "OM_TEMPLATE_NM")
-    private String omTemplateNm;
-
-    @Id
-    @Column(name = "OM_TEMPLATE_VERSION_NR")
-    private Integer omTemplateVersionNr;
-
-    @Id
-    @Column(name = "GROUP_NM")
-    private String groupNm;
-
-    @Column(name = "MINIMUM_OCCUR_QTY")
-    private Integer minimumOccurQty;
-
-    @Column(name = "MAXIMUM_OCCUR_QTY")
-    private Integer maximumOccurQty;
-
-    @Column(name = "OVERRIDE_LABEL_TXT")
-    private String overrideLabelTxt;
-
-    @Column(name = "OVERRIDE_COMMENT_TXT")
-    private String overrideCommentTxt;
-
-    @Column(name = "LOGICAL_DELETE_IND", length = 1)
-    private String logicalDeleteInd;
-
-    @Column(name = "GROUP_LOCATION_CD")
-    private String groupLocationCd;
-
-    @Column(name = "GROUP_SEQUENCE_NR")
-    private Integer groupSequenceNr;
-
-    @Column(name = "DML_TIMESTAMP")
-    private Timestamp dmlTimestamp;
-
-    @Column(name = "VARIABLE_REPOSITORY_NM")
-    private String variableRepositoryNm;
-
-    // Getters and setters for all fields
-}
-
-public class OmGroupTemplateRltnId implements Serializable {
-    private String omTemplateNm;
-    private Integer omTemplateVersionNr;
-    private String groupNm;
-
-    // Getters, setters, equals, and hashCode methods
-}
+#Check here for a full list of values you can override (including HPA, resource limits, etc.)
+#https://go/apichart
+usaa-talon-api:
+  deployment:
+    progressDeadlineSeconds: 660
+  application:
+    livenessProbe:
+      httpGet:
+        path: "v1/enterprise/metadata-services/actuator/health/liveness"
+        port: 8080
+        scheme: HTTP
+      initialDelaySeconds: 75
+      periodSeconds: 10
+      successThreshold: 1
+      failureThreshold: 5
+      timeoutSeconds: 5
+    readinessProbe:
+      httpGet:
+        path: "v1/enterprise/metadata-services/actuator/health/readiness"
+        port: 8080
+        scheme: HTTP
+      initialDelaySeconds: 75
+      periodSeconds: 10
+      successThreshold: 1
+      failureThreshold: 5
+      timeoutSeconds: 5
+    startupProbe:
+      httpGet:
+        path: "/v1/enterprise/metadata-services/actuator/health/liveness"
+        port: 8080
+        scheme: HTTP
+      initialDelaySeconds: 75
+      periodSeconds: 10
+      successThreshold: 1
+      failureThreshold: 5
+      timeoutSeconds: 5
+  hpa:
+    enabled: false
+  opentracing:
+    enabled: true
+  prometheus:
+    serviceMonitor:
+      enabled: true
+      endpoints:
+      - port: http
+        path: "/v1/enterprise/metadata-services/actuator/prometheus"
+        interval: 30s
+  conjurAuthenticator:
+    enabled: true
+  pdb:
+    enabled: true
+    minAvailable: 1
+  usaa-gloo-api:
+    enabled: true
+    apiId: a56ef025-8916-4edb-907c-6cbdd9c755b0
+    projectId: 88354
+    authConfig:
+      apiKey:
+        enabled: true
+        headerName: api-key
+    routeTable:
+      weight: 50
+      testCookieRouting:
+        enabled: true
+      methods:
+        - GET
+  # see https://go/extauth for more info
+  envoy:
+    enabled: true
+    config:
+      routes:
+      - match:
+          prefix: "/v1/enterprise/metadata-services/actuator/"
+        route:
+          host_rewrite_literal: localhost
+          cluster: "{{ .Release.Name }}"
+        typed_per_filter_config:
+          envoy.filters.http.ext_authz:
+            "@type": type.googleapis.com/envoy.extensions.filters.http.ext_authz.v3.ExtAuthzPerRoute
+            disabled: true
+      - match:
+          prefix: "/"
+        route:
+          host_rewrite_literal: localhost
+          cluster: "{{ .Release.Name }}"
+      rules:
+        action: ALLOW
+        policies:
+          AUTH_POLICY:
+            principals:
+            - header: { name: "roles", contains_match: "ROLE_GENESIS_EXP" }
+            permissions:
+            - any: true
+          HEALTH_POLICY:
+            principals:
+            - any: true
+            permissions:
+            - header: { name: ":path", prefix_match: "/v1/enterprise/metadata-services/actuator" }
+  extauth:
+    enabled: true
+    extraEnv:
+      - name: PORTFOLIO
+        value: "ENT"
+    roles:
+      dev:
+        ROLE_GENESIS_EXP:
+          - ASG_CONTENT_AUTHORING_LIBRARIAN_EXP_TEST
+      test:
+        ROLE_GENESIS_EXP:
+          - ASG_CONTENT_AUTHORING_LIBRARIAN_EXP_TEST
+      prod:
+        ROLE_GENESIS_EXP:
+          - ASG_CONTENT_AUTHORING_LIBRARIAN_EXP_PROD
