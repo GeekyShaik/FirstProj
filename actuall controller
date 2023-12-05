@@ -1,123 +1,113 @@
-SELECT DISTINCT
-    ovd.VARIABLE_REPOSITORY_NM AS variableRepositoryName,
-    ovd.GROUP_NM,
-    ovd.VARIABLE_NM,
-    ovd.COMMENT_TXT,
-    ovd.VARIABLE_LABEL_TXT,
-    ovd.DATA_TYPE_CD,
-    ovd.EDIT_RULE_TYPE_CD,
-    ovd.EDIT_RULE_VALUE_TXT,
-    ovd.MINIMUM_VARIABLE_LENGTH_QTY,
-    ovd.MAXIMUM_VARIABLE_LENGTH_QTY,
-    ovd.SCALE_POSITION_QTY,
-    ovd.DEFAULT_VALUE_TXT,
-    ovd.SAMPLE_DEFAULT_VALUE_TXT,
-    ovd.UI_WIDGET_CD,
-    ovd.EDIT_RULE_CASE_SENSITIVE_IND,
-    ovd.UPPER_CASE_IND,
-    ovd.WIDGET_PLACEMENT_CD,
-    ovd.AFTER_FIELD_LABEL_TXT,
-    ovd.LOGICAL_DELETE_IND,
-    ovd.LAST_UPDATE_PARTY_TD_ID,
-    ovd.LAST_UPDATE_PARTY_ID_TYPE_CD,
-    ovd.LAST_UPDATE_GMTS,
-    ovd.DML_TIMESTAMP,
-    ovtr.OM_TEMPLATE_NM,
-    ovtr.OM_TEMPLATE_VERSION_NR,
-    ovtr.REQUIRED_IND,
-    ovtr.DISPLAY_MODE_CD,
-    ovtr.OVERRIDE_COMMENT_TXT,
-    ovtr.OVERRIDE_LABEL_TXT,
-    ovtr.VARIABLE_SEQUENCE_NR,
-    ovtr.VARIABLE_LOCATION_CD,
-    ovtr.OVERRIDE_DEFAULT_VALUE_TXT,
-    ovtr.LOGICAL_DELETE_IND AS templateLogicalDeleteInd
-FROM
-    OM_VARIABLE_DEFINITION ovd
-LEFT JOIN
-    OM_VARIABLE_TEMPLATE_RLTN ovtr ON ovd.GROUP_NM = ovtr.GROUP_NM
-                                     AND ovd.VARIABLE_NM = ovtr.VARIABLE_NM
-                                     AND ovd.VARIABLE_REPOSITORY_NM = ovtr.VARIABLE_REPOSITORY_NM;This query includes all columns from both OM_VARIABLE_DEFINITION and OM_VARIABLE_TEMPLATE_RLTN tables and uses the DISTINCT keyword to remove duplicate records from the result set. Adjust it further based on your specific needs.
+OmGroupDefinition Entity and Composite Keyimport javax.persistence.*;
+import java.io.Serializable;
+import java.sql.Timestamp;
 
+@Entity
+@IdClass(OmGroupDefinitionId.class)
+@Table(name = "OM_GROUP_DEFINITION")
+public class OmGroupDefinition implements Serializable {
 
+    @Id
+    @Column(name = "VARIABLE_REPOSITORY_NM")
+    private String variableRepositoryNm;
 
+    @Id
+    @Column(name = "GROUP_NM")
+    private String groupNm;
 
+    @Column(name = "PARENT_GROUP_NM")
+    private String parentGroupNm;
 
-Certainly! Let's break down the SQL query based on the conditions you provided:
+    @Column(name = "MINIMUM_OCCUR_QTY")
+    private Integer minimumOccurQty;
 
-1. **Selection of Columns:**
-   - The `SELECT DISTINCT` statement is used to retrieve distinct rows from the result set.
+    @Column(name = "MAXIMUM_OCCUR_QTY")
+    private Integer maximumOccurQty;
 
-2. **Columns from `OM_VARIABLE_DEFINITION` Table (`ovd` alias):**
-   - Columns from `OM_VARIABLE_DEFINITION` table are selected, including `VARIABLE_REPOSITORY_NM` (aliased as `variableRepositoryName`), `GROUP_NM`, `VARIABLE_NM`, and various other attributes.
+    @Column(name = "GROUP_COMMENT_TXT")
+    private String groupCommentTxt;
 
-3. **Columns from `OM_VARIABLE_TEMPLATE_RLTN` Table (`ovtr` alias):**
-   - Columns from `OM_VARIABLE_TEMPLATE_RLTN` table are also selected, including `OM_TEMPLATE_NM`, `OM_TEMPLATE_VERSION_NR`, `REQUIRED_IND`, etc. Columns are matched with the corresponding columns in `OM_VARIABLE_DEFINITION` for the join conditions.
+    @Column(name = "LOGICAL_DELETE_IND", length = 1)
+    private String logicalDeleteInd;
 
-4. **Join Conditions:**
-   - The `LEFT JOIN` is used to combine rows from `OM_VARIABLE_DEFINITION` (`ovd`) with matching rows from `OM_VARIABLE_TEMPLATE_RLTN` (`ovtr`). The joining is based on three conditions:
-     - `ovd.GROUP_NM = ovtr.GROUP_NM`
-     - `ovd.VARIABLE_NM = ovtr.VARIABLE_NM`
-     - `ovd.VARIABLE_REPOSITORY_NM = ovtr.VARIABLE_REPOSITORY_NM`
+    @Column(name = "LAST_UPDATE_PARTY_ID")
+    private String lastUpdatePartyId;
 
-5. **DISTINCT Keyword:**
-   - The `DISTINCT` keyword ensures that only unique combinations of the selected columns are included in the result set, removing any duplicates.
+    @Column(name = "LAST_UPDATE_PARTY_ID_TYPE_CD")
+    private String lastUpdatePartyIdTypeCd;
 
-6. **Aliases:**
-   - Aliases are used to provide more meaningful names for the columns, enhancing readability.
+    @Column(name = "LAST_UPDATE_GMTS")
+    private Timestamp lastUpdateGmts;
 
-In summary, this query retrieves a list of distinct records that result from combining columns from both `OM_VARIABLE_DEFINITION` and `OM_VARIABLE_TEMPLATE_RLTN` tables based on specified join conditions. The result includes all columns from both tables. Adjustments can be made based on additional requirements or specific preferences.
+    @Column(name = "GROUP_LABEL_TXT")
+    private String groupLabelTxt;
 
-updated db query
+    @Column(name = "DML_TIMESTAMP")
+    private Timestamp dmlTimestamp;
 
-I apologize for any confusion. It seems there was an oversight in the initial query, and I appreciate your patience. I'll provide an updated query that includes all columns from both `OM_VARIABLE_DEFINITION` and `OM_VARIABLE_TEMPLATE_RLTN`. 
+    // Getters and setters for all fields
+}
 
-```sql
-SELECT DISTINCT
-    ovd.VARIABLE_REPOSITORY_NM AS variableRepositoryName,
-    ovd.GROUP_NM,
-    ovd.VARIABLE_NM,
-    ovd.COMMENT_TXT,
-    ovd.VARIABLE_LABEL_TXT,
-    ovd.DATA_TYPE_CD,
-    ovd.EDIT_RULE_TYPE_CD,
-    ovd.EDIT_RULE_VALUE_TXT,
-    ovd.MINIMUM_VARIABLE_LENGTH_QTY,
-    ovd.MAXIMUM_VARIABLE_LENGTH_QTY,
-    ovd.SCALE_POSITION_QTY,
-    ovd.DEFAULT_VALUE_TXT,
-    ovd.SAMPLE_DEFAULT_VALUE_TXT,
-    ovd.UI_WIDGET_CD,
-    ovd.EDIT_RULE_CASE_SENSITIVE_IND,
-    ovd.UPPER_CASE_IND,
-    ovd.WIDGET_PLACEMENT_CD,
-    ovd.AFTER_FIELD_LABEL_TXT,
-    ovd.LOGICAL_DELETE_IND,
-    ovd.LAST_UPDATE_PARTY_TD_ID,
-    ovd.LAST_UPDATE_PARTY_ID_TYPE_CD,
-    ovd.LAST_UPDATE_GMTS,
-    ovd.DML_TIMESTAMP,
-    ovtr.OM_TEMPLATE_NM,
-    ovtr.OM_TEMPLATE_VERSION_NR,
-    ovtr.GROUP_NM AS templateGroupNm,
-    ovtr.REQUIRED_IND,
-    ovtr.DISPLAY_MODE_CD,
-    ovtr.OVERRIDE_COMMENT_TXT,
-    ovtr.OVERRIDE_LABEL_TXT,
-    ovtr.VARIABLE_SEQUENCE_NR,
-    ovtr.VARIABLE_LOCATION_CD,
-    ovtr.OVERRIDE_DEFAULT_VALUE_TXT,
-    ovtr.LOGICAL_DELETE_IND AS templateLogicalDeleteInd,
-    ovtr.EDIT_RULE_TYPE_CD AS templateEditRuleTypeCd,
-    ovtr.EDIT_RULE_VALUE_TXT AS templateEditRuleValueTxt,
-    ovtr.DML_TIMESTAMP AS templateDmlTimestamp
-FROM
-    OM_VARIABLE_DEFINITION ovd
-LEFT JOIN
-    OM_VARIABLE_TEMPLATE_RLTN ovtr ON ovd.GROUP_NM = ovtr.GROUP_NM
-                                     AND ovd.VARIABLE_NM = ovtr.VARIABLE_NM
-                                     AND ovd.VARIABLE_REPOSITORY_NM = ovtr.VARIABLE_REPOSITORY_NM;
-```
+public class OmGroupDefinitionId implements Serializable {
+    private String variableRepositoryNm;
+    private String groupNm;
 
-This revised query should include all columns from both tables. I've also renamed some columns in the `OM_VARIABLE_TEMPLATE_RLTN` part of the query to avoid naming conflicts with columns from `OM_VARIABLE_DEFINITION`. Please adjust it further based on your specific requirements.
+    // Getters, setters, equals, and hashCode methods
+}OmGroupTemplateRltn Entity and Composite Keyimport javax.persistence.*;
+import java.io.Serializable;
+import java.sql.Timestamp;
 
+@Entity
+@IdClass(OmGroupTemplateRltnId.class)
+@Table(name = "OM_GROUP_TEMPLATE_RLTN")
+public class OmGroupTemplateRltn implements Serializable {
+
+    @Id
+    @Column(name = "OM_TEMPLATE_NM")
+    private String omTemplateNm;
+
+    @Id
+    @Column(name = "OM_TEMPLATE_VERSION_NR")
+    private Integer omTemplateVersionNr;
+
+    @Id
+    @Column(name = "GROUP_NM")
+    private String groupNm;
+
+    @Column(name = "MINIMUM_OCCUR_QTY")
+    private Integer minimumOccurQty;
+
+    @Column(name = "MAXIMUM_OCCUR_QTY")
+    private Integer maximumOccurQty;
+
+    @Column(name = "OVERRIDE_LABEL_TXT")
+    private String overrideLabelTxt;
+
+    @Column(name = "OVERRIDE_COMMENT_TXT")
+    private String overrideCommentTxt;
+
+    @Column(name = "LOGICAL_DELETE_IND", length = 1)
+    private String logicalDeleteInd;
+
+    @Column(name = "GROUP_LOCATION_CD")
+    private String groupLocationCd;
+
+    @Column(name = "GROUP_SEQUENCE_NR")
+    private Integer groupSequenceNr;
+
+    @Column(name = "DML_TIMESTAMP")
+    private Timestamp dmlTimestamp;
+
+    @Column(name = "VARIABLE_REPOSITORY_NM")
+    private String variableRepositoryNm;
+
+    // Getters and setters for all fields
+}
+
+public class OmGroupTemplateRltnId implements Serializable {
+    private String omTemplateNm;
+    private Integer omTemplateVersionNr;
+    private String groupNm;
+
+    // Getters, setters, equals, and hashCode methods
+}
