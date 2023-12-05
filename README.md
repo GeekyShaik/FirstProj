@@ -1,71 +1,53 @@
-import javax.persistence.*;
-import java.sql.Timestamp;
+2023-12-05T05:09:19.283-06:00  INFO {} 22344 --- [  restartedMain] .s.b.a.l.ConditionEvaluationReportLogger : 
 
-@Entity
-@Table(name = "OM_GROUP_DEFINITION")
-public class GroupDefinition {
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2023-12-05T05:09:19.315-06:00 ERROR {} 22344 --- [  restartedMain] o.s.boot.SpringApplication               : Application run failed
 
-    @Id
-    @Column(name = "GROUP_NM")
-    private String groupName;
+org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'entityManagerFactory' defined in class path resource [org/springframework/boot/autoconfigure/orm/jpa/HibernateJpaConfiguration.class]: [PersistenceUnit: default] Unable to build Hibernate SessionFactory; nested exception is java.lang.NullPointerException: Cannot invoke "org.hibernate.metamodel.mapping.EmbeddableValuedModelPart.getNavigableRole()" because "mappingModelPart" is null
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1770)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:598)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:520)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:326)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:324)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:200)
+	at org.springframework.context.support.AbstractApplicationContext.getBean(AbstractApplicationContext.java:1156)
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:931)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:608)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:733)
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:435)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:311)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1305)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1294)
+	at com.usaa.ect.V1MetadataServicesApplication.main(V1MetadataServicesApplication.java:14)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at org.springframework.boot.devtools.restart.RestartLauncher.run(RestartLauncher.java:49)
+Caused by: jakarta.persistence.PersistenceException: [PersistenceUnit: default] Unable to build Hibernate SessionFactory; nested exception is java.lang.NullPointerException: Cannot invoke "org.hibernate.metamodel.mapping.EmbeddableValuedModelPart.getNavigableRole()" because "mappingModelPart" is null
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.buildNativeEntityManagerFactory(AbstractEntityManagerFactoryBean.java:421)
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.afterPropertiesSet(AbstractEntityManagerFactoryBean.java:396)
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.afterPropertiesSet(LocalContainerEntityManagerFactoryBean.java:352)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeInitMethods(AbstractAutowireCapableBeanFactory.java:1816)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1766)
+	... 21 common frames omitted
+Caused by: java.lang.NullPointerException: Cannot invoke "org.hibernate.metamodel.mapping.EmbeddableValuedModelPart.getNavigableRole()" because "mappingModelPart" is null
+	at org.hibernate.metamodel.model.domain.internal.MappingMetamodelImpl.lambda$registerEmbeddableMappingType$1(MappingMetamodelImpl.java:229)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at org.hibernate.boot.internal.MetadataImpl.visitRegisteredComponents(MetadataImpl.java:570)
+	at org.hibernate.metamodel.model.domain.internal.MappingMetamodelImpl.registerEmbeddableMappingType(MappingMetamodelImpl.java:225)
+	at org.hibernate.metamodel.model.domain.internal.MappingMetamodelImpl.finishInitialization(MappingMetamodelImpl.java:210)
+	at org.hibernate.internal.SessionFactoryImpl.initializeMappingModel(SessionFactoryImpl.java:319)
+	at org.hibernate.internal.SessionFactoryImpl.<init>(SessionFactoryImpl.java:269)
+	at org.hibernate.boot.internal.SessionFactoryBuilderImpl.build(SessionFactoryBuilderImpl.java:431)
+	at org.hibernate.jpa.boot.internal.EntityManagerFactoryBuilderImpl.build(EntityManagerFactoryBuilderImpl.java:1455)
+	at org.springframework.orm.jpa.vendor.SpringHibernateJpaPersistenceProvider.createContainerEntityManagerFactory(SpringHibernateJpaPersistenceProvider.java:66)
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.createNativeEntityManagerFactory(LocalContainerEntityManagerFactoryBean.java:376)
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.buildNativeEntityManagerFactory(AbstractEntityManagerFactoryBean.java:409)
+	... 25 common frames omitted
 
-    // Other fields based on the database schema
-    @Column(name = "PARENT_GROUP_NM")
-    private String parentGroupName;
 
-    @Column(name = "MINIMUM_OCCUR_QTY")
-    private Integer minimumOccurQuantity;
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 8.0.
 
-    // ... include other fields here
-
-    @Column(name = "DML_TIMESTAMP")
-    private Timestamp dmlTimestamp;
-
-    // Standard getters and setters
-}
-
-@Entity
-@Table(name = "OM_GROUP_TEMPLATE_RLTN")
-@IdClass(GroupTemplateId.class) // Composite key
-public class GroupTemplateRltn {
-
-    @Id
-    @Column(name = "OM_TEMPLATE_NM")
-    private String templateName;
-
-    @Id
-    @Column(name = "OM_TEMPLATE_VERSION_NR")
-    private Integer templateVersionNumber;
-
-    // Other fields based on the database schema
-    @Column(name = "GROUP_NM")
-    private String groupName;
-
-    // ... include other fields here
-
-    @Column(name = "DML_TIMESTAMP")
-    private Timestamp dmlTimestamp;
-
-    // Standard getters and setters
-}
-
-// This class is used for the composite key
-public class GroupTemplateId implements Serializable {
-    private String templateName;
-    private Integer templateVersionNumber;
-
-    // Standard getters and setters, equals(), and hashCode() methods
-}
-Now, for the Spring Data JPA repository class with a custom query, let's assume you want to find all GroupTemplateRltn entities joined with GroupDefinition based on the group name:
-
-java
-Copy code
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import java.util.List;
-
-public interface GroupTemplateRltnRepository extends JpaRepository<GroupTemplateRltn, GroupTemplateId> {
-
-    @Query("SELECT gt FROM GroupTemplateRltn gt JOIN GroupDefinition gd ON gt.groupName = gd.groupName")
-    List<GroupTemplateRltn> findAllWithGroupDefinition();
-}
