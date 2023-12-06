@@ -1,9 +1,1 @@
-1 pm.sendRequest("https://wsdevinternal.usaa.com/tokens/v1/id-claim?party_id=PLY2816", function (err, response) {
-
-2
-
-var jsonData = response.json();
-
-3 pm.environment.set("idClaim", jsonData['id-claim']);
-
-});
+https://rintapi-ent.usaa.com/v1/enterprise/metadata-services/template-details/templateName/:templateName/templateVersion/:templateVersion
