@@ -42,3 +42,16 @@ glooenv88354-v1-review-moc-57110-runtimeclientobjects-88354 [dClaim))
 b7e47ca7-6095-44a5-a309-b1d63de02781
 
 Valur
+
+
+============
+KEY
+
+templateName
+
+TemplateVersion
+
+VALUE
+
+Test_10_11a
+1
