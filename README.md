@@ -1,11 +1,9 @@
-Certainly! I'll provide example unit test cases for both the `ObjectProfileController` and the `TemplateProfileService`. These examples are based on JUnit and Mockito, which are commonly used in Java testing.
+Certainly! I'll adapt the test classes for `ObjectProfileController` and `TemplateProfileService` to use JUnit 5, and I'll add more test cases to each.
 
-### ObjectProfileController Tests
-
-First, let's write tests for the `ObjectProfileController`. We'll focus on testing the `getTemplateProfile` method.
+### ObjectProfileController Tests (JUnit 5)
 
 ```java
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @WebMvcTest(ObjectProfileController.class)
 public class ObjectProfileControllerTest {
 
@@ -40,16 +38,26 @@ public class ObjectProfileControllerTest {
                 .andExpect(status().isNotFound());
     }
 
-    // Additional tests for other scenarios...
+    @Test
+    public void whenServiceThrowsException_thenReturns500() throws Exception {
+        when(templateProfileService.getTemplatesByNameAndVersion(anyString(), anyInt())).thenThrow(new RuntimeException());
+
+        mockMvc.perform(get("/template-details/template-name/test/template-version/1"))
+                .andExpect(status().isInternalServerError());
+    }
+
+    @Test
+    public void whenInvalidRoleAccess_thenReturns403() throws Exception {
+        // Here, you would simulate a request with an unauthorized role, expecting a 403 Forbidden response.
+        // This requires additional Spring Security setup in test configuration.
+    }
 }
 ```
 
-### TemplateProfileService Tests
-
-Now, let's write tests for the `TemplateProfileService`. We'll focus on testing the `getTemplatesByNameAndVersion` method.
+### TemplateProfileService Tests (JUnit 5)
 
 ```java
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class TemplateProfileServiceTest {
 
     @Mock
@@ -85,12 +93,23 @@ public class TemplateProfileServiceTest {
         assertTrue(result.isEmpty());
     }
 
-    // Additional tests for other scenarios...
+    @Test
+    public void whenRepositoryThrowsException_thenServiceHandlesIt() {
+        when(templateRepository.findTemplateProfile(anyString(), anyInt())).thenThrow(new RuntimeException());
+
+        assertThrows(RuntimeException.class, () -> 
+            templateProfileService.getTemplatesByNameAndVersion("test", 1));
+    }
+
+    @Test
+    public void whenInvalidInput_thenHandleGracefully() {
+        // Add a test case for handling invalid inputs, if applicable.
+        // For instance, passing null values and asserting the service's behavior.
+    }
 }
 ```
 
-### Notes
-- In the controller tests, `MockMvc` is used to simulate HTTP requests and verify the response.
-- In the service tests, dependencies are mocked and behavior is asserted based on the mocked responses.
-- These tests cover basic scenarios. You should add more tests to cover edge cases and error handling for thorough coverage.
-- Always assert both the result and the expected interactions with the mocked dependencies.
+### Notes for JUnit 5
+- `@ExtendWith` is used instead of `@RunWith` for extending test classes with additional functionality.
+- More test cases are added to cover exceptional scenarios and edge cases.
+- Make sure to adapt the setup to your specific needs, especially concerning security and exception handling.
