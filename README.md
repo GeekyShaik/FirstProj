@@ -1,84 +1,175 @@
-Absolutely! I'll add some additional test cases to the `ObjectProfileControllerTest` and `TemplateProfileServiceTest` classes using JUnit 5. These will cover different aspects and scenarios.
-
-### Additional ObjectProfileController Tests
-
-```java
-// ... [previous imports]
-
-import org.springframework.mock.web.MockHttpServletResponse;
-
-@ExtendWith(SpringExtension.class)
-@WebMvcTest(ObjectProfileController.class)
-public class ObjectProfileControllerTest {
-    // ... [previous field declarations and setup]
-
-    @Test
-    public void whenValidInput_thenContentTypeIsJson() throws Exception {
-        List<TemplateProfileDto> dtoList = Collections.singletonList(new TemplateProfileDto());
-        when(templateProfileService.getTemplatesByNameAndVersion("validName", 1)).thenReturn(dtoList);
-
-        mockMvc.perform(get(TEMPLATE_DETAILS_ENDPOINT, "validName", 1))
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "V2IrisTemplateMetadata",
+    "description": "This is the iris template metadata api that will be used by both iris internal components and external clients who consumes iris public apis",
+    "contact": {
+      "name": "Librarian",
+      "email": "usaa_moc_librarians_auth_sa@usaa.com"
+    },
+    "version": "v2.0.5",
+    "x-usaa-application": "Iris Experience Layer for Migration",
+    "x-usaa-category": "Enterprise"
+  },
+  "servers": [
+    {
+      "url": "https://rintapi-ent.usaa.com/v2/enterprise/communications/iris/metadata"
     }
-
-    @Test
-    public void whenServiceReturnsEmptyList_thenResponseIsEmpty() throws Exception {
-        when(templateProfileService.getTemplatesByNameAndVersion("validName", 1)).thenReturn(Collections.emptyList());
-
-        MockHttpServletResponse response = mockMvc.perform(get(TEMPLATE_DETAILS_ENDPOINT, "validName", 1))
-                                                 .andReturn().getResponse();
-
-        assertEquals("", response.getContentAsString());
+  ],
+  "tags": [
+    {
+      "name": "/runtime-metadata",
+      "description": "call v3 Core API to GET RUNTIME_MDATA_TXT by mdata-obj-type-cd"
     }
-
-    // Additional test cases...
+  ],
+  "paths": {
+    "/runtime-metadata": {
+      "get": {
+        "tags": [
+          "/runtime-metadata"
+        ],
+        "operationId": "getTemplateRuntimeMetadata",
+        "parameters": [
+          {
+            "name": "metadataRequest",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/MetadataRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TemplateRuntimeMetadataDTO"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "MetadataRequest": {
+        "required": [
+          "mdataObjEffDate",
+          "mdataObjName",
+          "mdataObjTypeCode"
+        ],
+        "type": "object",
+        "properties": {
+          "mdataObjName": {
+            "maxLength": 50,
+            "minLength": 1,
+            "type": "string"
+          },
+          "mdataObjTypeCode": {
+            "maxLength": 20,
+            "minLength": 0,
+            "type": "string"
+          },
+          "mdataObjEffDate": {
+            "type": "string",
+            "format": "date"
+          }
+        }
+      },
+      "JsonNode": {
+        "type": "object"
+      },
+      "TemplateRuntimeMetadataDTO": {
+        "required": [
+          "creaPrtyId",
+          "creaTimestamp",
+          "envrName",
+          "mdataObjEffDate",
+          "mdataObjName",
+          "mdataObjTypeCode",
+          "mdataObjVerNumber",
+          "mdataObjVerStatCode",
+          "refObjVerNumber",
+          "runtimeMdataText"
+        ],
+        "type": "object",
+        "properties": {
+          "mdataObjName": {
+            "type": "string"
+          },
+          "mdataObjTypeCode": {
+            "type": "string"
+          },
+          "mdataObjEffDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "mdataObjVerNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "envrName": {
+            "type": "string"
+          },
+          "refObjVerNumber": {
+            "type": "number"
+          },
+          "mdataObjVerStatCode": {
+            "type": "string"
+          },
+          "runtimeMdataText": {
+            "$ref": "#/components/schemas/JsonNode"
+          },
+          "creaTimestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "creaPrtyId": {
+            "type": "string"
+          },
+          "updtTimestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updtPrtyId": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "API Key": {
+        "type": "apiKey",
+        "name": "api-key",
+        "in": "header"
+      },
+      "oauth2": {
+        "type": "oauth2",
+        "flows": {
+          "implicit": {
+            "scopes": {
+              "usaa.ent.authoring.public-apis.read": "This endpoint will allow requests to retrieve runtime metadata from APP_IRIS"
+            },
+            "authorizationUrl": "https://example.com"
+          }
+        }
+      }
+    }
+  }
 }
-```
-
-### Additional TemplateProfileService Tests
-
-```java
-// ... [previous imports]
-
-import java.util.Arrays;
-
-@ExtendWith(MockitoExtension.class)
-public class TemplateProfileServiceTest {
-    // ... [previous field declarations and setup]
-
-    @Test
-    public void whenMultipleTemplatesFound_thenAllAreReturned() {
-        List<OmMsgTemplateEntity> entities = Arrays.asList(new OmMsgTemplateEntity(), new OmMsgTemplateEntity());
-        when(templateRepository.findTemplateProfile("validName", 1)).thenReturn(entities);
-
-        TemplateProfileModelMapper mapper = new TemplateProfileModelMapper();
-        when(templateProfileModelMapperConfig.templateProfileModelMapper()).thenReturn(mapper);
-
-        List<TemplateProfileDto> result = templateProfileService.getTemplatesByNameAndVersion("validName", 1);
-
-        assertEquals(2, result.size());
-    }
-
-    @Test
-    public void whenInvalidVersion_thenEmptyListReturned() {
-        when(templateRepository.findTemplateProfile("validName", -1)).thenReturn(Collections.emptyList());
-
-        List<TemplateProfileDto> result = templateProfileService.getTemplatesByNameAndVersion("validName", -1);
-
-        assertTrue(result.isEmpty());
-    }
-
-    // Additional test cases...
-}
-```
-
-### Explanation
-- **ObjectProfileControllerTest**
-  - **ContentType Test**: Checks if the response content type is JSON when a valid request is made.
-  - **Empty Response Test**: Verifies the controller's response is empty when the service returns an empty list.
-
-- **TemplateProfileServiceTest**
-  - **Multiple Templates Test**: Tests the scenario where multiple templates are found, and ensures all are returned.
-  - **Invalid Version Test**: Checks the service's behavior when an invalid version number is provided (e.g., a negative number).
-
-These tests enhance coverage by checking various scenarios and edge cases. It's important to tailor these tests based on the specific logic and requirements of your application.
