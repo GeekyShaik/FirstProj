@@ -1,175 +1,59 @@
-{
-  "openapi": "3.0.1",
-  "info": {
-    "title": "V2IrisTemplateMetadata",
-    "description": "This is the iris template metadata api that will be used by both iris internal components and external clients who consumes iris public apis",
-    "contact": {
-      "name": "Librarian",
-      "email": "usaa_moc_librarians_auth_sa@usaa.com"
-    },
-    "version": "v2.0.5",
-    "x-usaa-application": "Iris Experience Layer for Migration",
-    "x-usaa-category": "Enterprise"
-  },
-  "servers": [
-    {
-      "url": "https://rintapi-ent.usaa.com/v2/enterprise/communications/iris/metadata"
-    }
-  ],
-  "tags": [
-    {
-      "name": "/runtime-metadata",
-      "description": "call v3 Core API to GET RUNTIME_MDATA_TXT by mdata-obj-type-cd"
-    }
-  ],
-  "paths": {
-    "/runtime-metadata": {
-      "get": {
-        "tags": [
-          "/runtime-metadata"
-        ],
-        "operationId": "getTemplateRuntimeMetadata",
-        "parameters": [
-          {
-            "name": "metadataRequest",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "$ref": "#/components/schemas/MetadataRequest"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TemplateRuntimeMetadataDTO"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    }
-  },
-  "components": {
-    "schemas": {
-      "MetadataRequest": {
-        "required": [
-          "mdataObjEffDate",
-          "mdataObjName",
-          "mdataObjTypeCode"
-        ],
-        "type": "object",
-        "properties": {
-          "mdataObjName": {
-            "maxLength": 50,
-            "minLength": 1,
-            "type": "string"
-          },
-          "mdataObjTypeCode": {
-            "maxLength": 20,
-            "minLength": 0,
-            "type": "string"
-          },
-          "mdataObjEffDate": {
-            "type": "string",
-            "format": "date"
-          }
-        }
-      },
-      "JsonNode": {
-        "type": "object"
-      },
-      "TemplateRuntimeMetadataDTO": {
-        "required": [
-          "creaPrtyId",
-          "creaTimestamp",
-          "envrName",
-          "mdataObjEffDate",
-          "mdataObjName",
-          "mdataObjTypeCode",
-          "mdataObjVerNumber",
-          "mdataObjVerStatCode",
-          "refObjVerNumber",
-          "runtimeMdataText"
-        ],
-        "type": "object",
-        "properties": {
-          "mdataObjName": {
-            "type": "string"
-          },
-          "mdataObjTypeCode": {
-            "type": "string"
-          },
-          "mdataObjEffDate": {
-            "type": "string",
-            "format": "date"
-          },
-          "mdataObjVerNumber": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "envrName": {
-            "type": "string"
-          },
-          "refObjVerNumber": {
-            "type": "number"
-          },
-          "mdataObjVerStatCode": {
-            "type": "string"
-          },
-          "runtimeMdataText": {
-            "$ref": "#/components/schemas/JsonNode"
-          },
-          "creaTimestamp": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "creaPrtyId": {
-            "type": "string"
-          },
-          "updtTimestamp": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "updtPrtyId": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "securitySchemes": {
-      "API Key": {
-        "type": "apiKey",
-        "name": "api-key",
-        "in": "header"
-      },
-      "oauth2": {
-        "type": "oauth2",
-        "flows": {
-          "implicit": {
-            "scopes": {
-              "usaa.ent.authoring.public-apis.read": "This endpoint will allow requests to retrieve runtime metadata from APP_IRIS"
-            },
-            "authorizationUrl": "https://example.com"
-          }
-        }
-      }
-    }
-  }
-}
+"Search by: 
+from tables: om_Authoring.om_group_definition, om_Authoring.om_group_template_rltn
+
+select all from om_Authoring.om_group_template_rltn  (name and version)
+
+join based on GROUP_NM and VARIABLE_REPOSITORY_NM  with  om_Authoring.om_group_definition
+
+"variableRepositoryName": to be added
+
+    "parentGroupNm": String
+    "minimumOccurQty": Integer
+    "maximumOccurQty": Integer
+    "groupCommentTxt":
+    "logicalDeleteInd":
+    "lastUpdatePartyTdId":
+    "lastUpdatePartyIdTypeCd":
+    "lastUpdateGmts":
+    "groupLabelTxt":
+
+
+
+
+desc om_Authoring.om_group_definition;
+
+
+Name                         Null?    Type          
+---------------------------- -------- ------------- 
+VARIABLE_REPOSITORY_NM       NOT NULL VARCHAR2(30)  
+GROUP_NM                     NOT NULL VARCHAR2(50)  
+PARENT_GROUP_NM                       VARCHAR2(50)  
+MINIMUM_OCCUR_QTY                     NUMBER(3)     
+MAXIMUM_OCCUR_QTY                     NUMBER(3)     
+GROUP_COMMENT_TXT                     VARCHAR2(120) 
+LOGICAL_DELETE_IND                    CHAR(1)       
+LAST_UPDATE_PARTY_TD_ID               CHAR(9)       
+LAST_UPDATE_PARTY_ID_TYPE_CD          CHAR(4)       
+LAST_UPDATE_GMTS                      TIMESTAMP(6)  
+GROUP_LABEL_TXT                       VARCHAR2(50)  
+DML_TIMESTAMP                NOT NULL TIMESTAMP(6)  
+===========================================================================
+
+
+
+desc om_Authoring.om_group_template_rltn
+
+Name                   Null?    Type          
+---------------------- -------- ------------- 
+OM_TEMPLATE_NM         NOT NULL VARCHAR2(30)  
+OM_TEMPLATE_VERSION_NR NOT NULL NUMBER(4)     
+GROUP_NM               NOT NULL VARCHAR2(50)  
+MINIMUM_OCCUR_QTY               NUMBER(3)     
+MAXIMUM_OCCUR_QTY               NUMBER(3)     
+OVERRIDE_LABEL_TXT              VARCHAR2(50)  
+OVERRIDE_COMMENT_TXT            VARCHAR2(250) 
+LOGICAL_DELETE_IND              CHAR(1)       
+GROUP_LOCATION_CD               CHAR(2)       
+GROUP_SEQUENCE_NR               NUMBER(4)     
+DML_TIMESTAMP          NOT NULL TIMESTAMP(6)  
+VARIABLE_REPOSITORY_NM          VARCHAR2(30) "
