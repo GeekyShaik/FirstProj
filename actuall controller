@@ -1,113 +1,88 @@
-OmGroupDefinition Entity and Composite Keyimport javax.persistence.*;
-import java.io.Serializable;
-import java.sql.Timestamp;
+To create unit tests for both the `TemplateProfileService` and `ObjectProfileController`, you would typically use a testing framework like JUnit for Java along with Mockito for mocking dependencies. Here is a high-level structure of how the tests might look:
 
-@Entity
-@IdClass(OmGroupDefinitionId.class)
-@Table(name = "OM_GROUP_DEFINITION")
-public class OmGroupDefinition implements Serializable {
+### For `TemplateProfileService`
 
-    @Id
-    @Column(name = "VARIABLE_REPOSITORY_NM")
-    private String variableRepositoryNm;
+```java
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
-    @Id
-    @Column(name = "GROUP_NM")
-    private String groupNm;
+import org.junit.Before;
+import org.junit.Test;
+import java.util.List;
 
-    @Column(name = "PARENT_GROUP_NM")
-    private String parentGroupNm;
+public class TemplateProfileServiceTest {
 
-    @Column(name = "MINIMUM_OCCUR_QTY")
-    private Integer minimumOccurQty;
+    private TemplateProfileService serviceUnderTest;
+    private OmMessageTemplateRepository mockTemplateRepository;
+    private OmMsgTemplateChannelRepository mockChannelRepository;
 
-    @Column(name = "MAXIMUM_OCCUR_QTY")
-    private Integer maximumOccurQty;
+    @Before
+    public void setUp() {
+        mockTemplateRepository = mock(OmMessageTemplateRepository.class);
+        mockChannelRepository = mock(OmMsgTemplateChannelRepository.class);
+        serviceUnderTest = new TemplateProfileService(mockTemplateRepository, mockChannelRepository);
+    }
 
-    @Column(name = "GROUP_COMMENT_TXT")
-    private String groupCommentTxt;
+    @Test
+    public void testGetTemplatesByNameAndVersion() {
+        // Setup mock behavior
+        // e.g., when(mockTemplateRepository.findOmMsgTemplateEntityByOmMsgTemplateEntityPK_TemplateNameAndOmMsgTemplateEntityPK_TemplateVersion(templateName, templateVersion)).thenReturn(...);
 
-    @Column(name = "LOGICAL_DELETE_IND", length = 1)
-    private String logicalDeleteInd;
+        // Call the method under test
+        List<TemplateProfileDto> result = serviceUnderTest.getTemplatesByNameAndVersion("templateName", 1);
 
-    @Column(name = "LAST_UPDATE_PARTY_ID")
-    private String lastUpdatePartyId;
-
-    @Column(name = "LAST_UPDATE_PARTY_ID_TYPE_CD")
-    private String lastUpdatePartyIdTypeCd;
-
-    @Column(name = "LAST_UPDATE_GMTS")
-    private Timestamp lastUpdateGmts;
-
-    @Column(name = "GROUP_LABEL_TXT")
-    private String groupLabelTxt;
-
-    @Column(name = "DML_TIMESTAMP")
-    private Timestamp dmlTimestamp;
-
-    // Getters and setters for all fields
+        // Assertions
+        // e.g., assertNotNull(result);
+        // e.g., verify(mockTemplateRepository).findOmMsgTemplateEntityByOmMsgTemplateEntityPK_TemplateNameAndOmMsgTemplateEntityPK_TemplateVersion(anyString(), anyInt());
+    }
+    // Additional test cases...
 }
+```
 
-public class OmGroupDefinitionId implements Serializable {
-    private String variableRepositoryNm;
-    private String groupNm;
+### For `ObjectProfileController`
 
-    // Getters, setters, equals, and hashCode methods
-}OmGroupTemplateRltn Entity and Composite Keyimport javax.persistence.*;
-import java.io.Serializable;
-import java.sql.Timestamp;
+```java
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@Entity
-@IdClass(OmGroupTemplateRltnId.class)
-@Table(name = "OM_GROUP_TEMPLATE_RLTN")
-public class OmGroupTemplateRltn implements Serializable {
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.junit4.SpringRunner;
 
-    @Id
-    @Column(name = "OM_TEMPLATE_NM")
-    private String omTemplateNm;
+@RunWith(SpringRunner.class)
+@WebMvcTest(ObjectProfileController.class)
+public class ObjectProfileControllerTest {
 
-    @Id
-    @Column(name = "OM_TEMPLATE_VERSION_NR")
-    private Integer omTemplateVersionNr;
+    @Autowired
+    private MockMvc mockMvc;
 
-    @Id
-    @Column(name = "GROUP_NM")
-    private String groupNm;
+    @MockBean
+    private TemplateProfileService mockTemplateProfileService;
 
-    @Column(name = "MINIMUM_OCCUR_QTY")
-    private Integer minimumOccurQty;
+    @Test
+    public void testGetTemplateProfile() throws Exception {
+        // Define mock behavior
+        // e.g., when(mockTemplateProfileService.getTemplatesByNameAndVersion(anyString(), anyInt())).thenReturn(...);
 
-    @Column(name = "MAXIMUM_OCCUR_QTY")
-    private Integer maximumOccurQty;
+        // Perform GET request
+        mockMvc.perform(get("/template-details/template-name/{templateName}/template-version/{templateVersion}", "templateName", 1))
+                .andExpect(status().isOk());
 
-    @Column(name = "OVERRIDE_LABEL_TXT")
-    private String overrideLabelTxt;
-
-    @Column(name = "OVERRIDE_COMMENT_TXT")
-    private String overrideCommentTxt;
-
-    @Column(name = "LOGICAL_DELETE_IND", length = 1)
-    private String logicalDeleteInd;
-
-    @Column(name = "GROUP_LOCATION_CD")
-    private String groupLocationCd;
-
-    @Column(name = "GROUP_SEQUENCE_NR")
-    private Integer groupSequenceNr;
-
-    @Column(name = "DML_TIMESTAMP")
-    private Timestamp dmlTimestamp;
-
-    @Column(name = "VARIABLE_REPOSITORY_NM")
-    private String variableRepositoryNm;
-
-    // Getters and setters for all fields
+        // Additional assertions and verify
+    }
+    // Additional test cases...
 }
+```
 
-public class OmGroupTemplateRltnId implements Serializable {
-    private String omTemplateNm;
-    private Integer omTemplateVersionNr;
-    private String groupNm;
+In the `TemplateProfileServiceTest`, you mock the dependencies `OmMessageTemplateRepository` and `OmMsgTemplateChannelRepository` and test the `getTemplatesByNameAndVersion` method. You would define expected behavior, invoke the method, and assert the results.
 
-    // Getters, setters, equals, and hashCode methods
-}
+In the `ObjectProfileControllerTest`, you mock the `TemplateProfileService` since it's a dependency of the controller. You perform mock MVC calls to your endpoints and assert the HTTP response and, optionally, the returned content.
+
+Remember to extend these examples with more test methods to cover different scenarios, error cases, and input variations to thoroughly test your service and controller. Also, consider adding integration tests that involve the actual database and application context for a more end-to-end testing approach.
