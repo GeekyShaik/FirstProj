@@ -1,40 +1,60 @@
-To create unit tests for both the `TemplateProfileService` and `ObjectProfileController`, you would typically use a testing framework like JUnit for Java along with Mockito for mocking dependencies. Here is a high-level structure of how the tests might look:
+Sure, let's create some more specific test cases for both the `TemplateProfileService` and `ObjectProfileController`.
 
 ### For `TemplateProfileService`
 
 ```java
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-
-import org.junit.Before;
-import org.junit.Test;
-import java.util.List;
+// ...
 
 public class TemplateProfileServiceTest {
 
-    private TemplateProfileService serviceUnderTest;
-    private OmMessageTemplateRepository mockTemplateRepository;
-    private OmMsgTemplateChannelRepository mockChannelRepository;
+    // ... [Previous setup code]
 
-    @Before
-    public void setUp() {
-        mockTemplateRepository = mock(OmMessageTemplateRepository.class);
-        mockChannelRepository = mock(OmMsgTemplateChannelRepository.class);
-        serviceUnderTest = new TemplateProfileService(mockTemplateRepository, mockChannelRepository);
+    @Test
+    public void whenValidNameAndVersion_thenTemplateShouldBeFound() {
+        // Setup
+        String templateName = "ValidName";
+        Integer templateVersion = 1;
+        // Define behavior of mocked repository
+        // Assume this method returns a non-empty list when valid template name and version is passed
+        when(mockTemplateRepository.findOmMsgTemplateEntityByOmMsgTemplateEntityPK_TemplateNameAndOmMsgTemplateEntityPK_TemplateVersion(templateName, templateVersion)).thenReturn(new OmMsgTemplateEntity());
+        when(mockChannelRepository.searchAllByTemplateNameAndTemplateVersion(templateName, templateVersion)).thenReturn(new ArrayList<>());
+
+        // Execute
+        List<TemplateProfileDto> result = serviceUnderTest.getTemplatesByNameAndVersion(templateName, templateVersion);
+
+        // Assert
+        assertNotNull(result);
+        assertFalse(result.isEmpty());
     }
 
     @Test
-    public void testGetTemplatesByNameAndVersion() {
-        // Setup mock behavior
-        // e.g., when(mockTemplateRepository.findOmMsgTemplateEntityByOmMsgTemplateEntityPK_TemplateNameAndOmMsgTemplateEntityPK_TemplateVersion(templateName, templateVersion)).thenReturn(...);
+    public void whenInvalidNameAndVersion_thenNoTemplateShouldBeFound() {
+        // Setup
+        String templateName = "InvalidName";
+        Integer templateVersion = 99;
+        // Define behavior of mocked repository
+        when(mockTemplateRepository.findOmMsgTemplateEntityByOmMsgTemplateEntityPK_TemplateNameAndOmMsgTemplateEntityPK_TemplateVersion(templateName, templateVersion)).thenReturn(null);
 
-        // Call the method under test
-        List<TemplateProfileDto> result = serviceUnderTest.getTemplatesByNameAndVersion("templateName", 1);
+        // Execute
+        List<TemplateProfileDto> result = serviceUnderTest.getTemplatesByNameAndVersion(templateName, templateVersion);
 
-        // Assertions
-        // e.g., assertNotNull(result);
-        // e.g., verify(mockTemplateRepository).findOmMsgTemplateEntityByOmMsgTemplateEntityPK_TemplateNameAndOmMsgTemplateEntityPK_TemplateVersion(anyString(), anyInt());
+        // Assert
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
     }
+
+    @Test(expected = Exception.class)
+    public void whenRepositoryThrowsException_thenShouldPropagate() {
+        // Setup
+        String templateName = "ValidName";
+        Integer templateVersion = 1;
+        // Define behavior to throw exception
+        when(mockTemplateRepository.findOmMsgTemplateEntityByOmMsgTemplateEntityPK_TemplateNameAndOmMsgTemplateEntityPK_TemplateVersion(anyString(), anyInt())).thenThrow(new RuntimeException());
+
+        // Execute
+        serviceUnderTest.getTemplatesByNameAndVersion(templateName, templateVersion);
+    }
+
     // Additional test cases...
 }
 ```
@@ -42,47 +62,56 @@ public class TemplateProfileServiceTest {
 ### For `ObjectProfileController`
 
 ```java
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit4.SpringRunner;
+// ...
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(ObjectProfileController.class)
 public class ObjectProfileControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
-
-    @MockBean
-    private TemplateProfileService mockTemplateProfileService;
+    // ... [Previous setup code]
 
     @Test
-    public void testGetTemplateProfile() throws Exception {
-        // Define mock behavior
-        // e.g., when(mockTemplateProfileService.getTemplatesByNameAndVersion(anyString(), anyInt())).thenReturn(...);
+    public void whenGetRequestToTemplateDetails_thenCorrectResponse() throws Exception {
+        // Setup
+        List<TemplateProfileDto> mockResponse = new ArrayList<>();
+        mockResponse.add(new TemplateProfileDto()); // assuming constructor sets up a valid DTO
+        when(mockTemplateProfileService.getTemplatesByNameAndVersion(anyString(), anyInt())).thenReturn(mockResponse);
 
-        // Perform GET request
-        mockMvc.perform(get("/template-details/template-name/{templateName}/template-version/{templateVersion}", "templateName", 1))
+        // Perform
+        mockMvc.perform(get("/template-details/template-name/{templateName}/template-version/{templateVersion}", "ValidName", 1))
                 .andExpect(status().isOk());
 
-        // Additional assertions and verify
+        // Verify
+        verify(mockTemplateProfileService, times(1)).getTemplatesByNameAndVersion(anyString(), anyInt());
     }
+
+    @Test
+    public void whenTemplateNameNotFound_thenRespondNotFound() throws Exception {
+        // Assume service returns empty list for not found template
+        when(mockTemplateProfileService.getTemplatesByNameAndVersion(anyString(), anyInt())).thenReturn(new ArrayList<>());
+
+        // Perform
+        mockMvc.perform(get("/template-details/template-name/{templateName}/template-version/{templateVersion}", "InvalidName", 99))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void whenServiceThrowsException_thenRespondInternalServerError() throws Exception {
+        // Setup
+        when(mockTemplateProfileService.getTemplatesByNameAndVersion(anyString(), anyInt())).thenThrow(new RuntimeException("Internal Server Error"));
+
+        // Perform and Assert
+        mockMvc.perform(get("/template-details/template-name/{templateName}/template-version/{templateVersion}", "ValidName", 1))
+                .andExpect(status().isInternalServerError());
+    }
+
     // Additional test cases...
 }
 ```
 
-In the `TemplateProfileServiceTest`, you mock the dependencies `OmMessageTemplateRepository` and `OmMsgTemplateChannelRepository` and test the `getTemplatesByNameAndVersion` method. You would define expected behavior, invoke the method, and assert the results.
+In these test cases:
 
-In the `ObjectProfileControllerTest`, you mock the `TemplateProfileService` since it's a dependency of the controller. You perform mock MVC calls to your endpoints and assert the HTTP response and, optionally, the returned content.
+- For the `TemplateProfileService`, I've included tests for expected success scenarios, a scenario where the template is not found, and a scenario where an exception is thrown.
+- For the `ObjectProfileController`, there are tests for successful retrieval, not found scenarios, and error handling when an internal server error occurs.
 
-Remember to extend these examples with more test methods to cover different scenarios, error cases, and input variations to thoroughly test your service and controller. Also, consider adding integration tests that involve the actual database and application context for a more end-to-end testing approach.
+When writing these tests, ensure that your actual service and controller logic is closely mimicked by the mock setups and assertions. Also, it might be necessary to adapt these examples slightly depending on the exact behavior of your classes and methods. Each test should ideally cover a single scenario or behavior. As your application evolves, continue to add tests for new features and modify existing tests as needed.
