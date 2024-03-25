@@ -1,3 +1,4 @@
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -16,33 +17,34 @@ public class VariableServiceTest {
     @InjectMocks
     private VariableService variableService;
 
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+    }
+
     @Test
-    void testFindVariableById() {
+    void testFindVariableById_VariableExists() {
         // Arrange
-        MockitoAnnotations.openMocks(this); // Initialize mocks
-        
         String variableId = "A01";
         Variable expectedVariable = new Variable(variableId, "Some Value");
         when(variableRepository.findById(variableId)).thenReturn(Optional.of(expectedVariable));
-        
+
         // Act
         Optional<Variable> result = variableService.findVariableById(variableId);
-        
+
         // Assert
         assertEquals(Optional.of(expectedVariable), result);
     }
-    
+
     @Test
-    void testFindVariableById_NotFound() {
+    void testFindVariableById_VariableNotFound() {
         // Arrange
-        MockitoAnnotations.openMocks(this); // Initialize mocks
-        
         String variableId = "B02"; // Assuming this ID is not present in the repository
         when(variableRepository.findById(variableId)).thenReturn(Optional.empty());
-        
+
         // Act
         Optional<Variable> result = variableService.findVariableById(variableId);
-        
+
         // Assert
         assertEquals(Optional.empty(), result);
     }
