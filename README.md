@@ -30,7 +30,7 @@ public class VariableServiceTest {
         when(variableRepository.findById(variableId)).thenReturn(Optional.of(expectedVariable));
 
         // Act
-        Optional<Variable> result = variableService.findVariableById(variableId);
+        Optional<Variable> result = variableService.getVariableById(variableId);
 
         // Assert
         assertEquals(Optional.of(expectedVariable), result);
@@ -43,7 +43,7 @@ public class VariableServiceTest {
         when(variableRepository.findById(variableId)).thenReturn(Optional.empty());
 
         // Act
-        Optional<Variable> result = variableService.findVariableById(variableId);
+        Optional<Variable> result = variableService.getVariableById(variableId);
 
         // Assert
         assertEquals(Optional.empty(), result);
