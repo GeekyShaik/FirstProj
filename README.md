@@ -25,7 +25,7 @@ public class VariableServiceTest {
     @Test
     void testFindVariableById_VariableExists() {
         // Arrange
-        String variableId = "A01";
+        long variableId = 1L;
         Variable expectedVariable = new Variable(variableId, "Some Value");
         when(variableRepository.findById(variableId)).thenReturn(Optional.of(expectedVariable));
 
@@ -39,7 +39,7 @@ public class VariableServiceTest {
     @Test
     void testFindVariableById_VariableNotFound() {
         // Arrange
-        String variableId = "B02"; // Assuming this ID is not present in the repository
+        long variableId = 2L; // Assuming this ID is not present in the repository
         when(variableRepository.findById(variableId)).thenReturn(Optional.empty());
 
         // Act
