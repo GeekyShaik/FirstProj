@@ -3,79 +3,47 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 
 public class VariableServiceTest {
 
     @Mock
     private VariableRepository variableRepository;
 
-    @Mock
-    private VarianceIdGenerator varianceIdGenerator;
-
     @InjectMocks
     private VariableService variableService;
 
-    @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.initMocks(this);
-    }
-
     @Test
-    public void testValidateAndPersistVariable_NewVariable_Success() {
+    void testFindVariableById() {
         // Arrange
-        VariableDefinitionEntity variableDefinition = new VariableDefinitionEntity();
-        variableDefinition.setVariableName("TestVariable");
-        variableDefinition.setVariableVarianceId("A01");
-        // Mock behavior to return null, indicating a new variance ID
-        when(varianceIdGenerator.getNewVarianceId(any())).thenReturn("A01");
-        // Mock behavior to return null, indicating the variable is not found
-        when(variableRepository.findByVariableVarianceId("A01")).thenReturn(Optional.empty());
-
+        MockitoAnnotations.openMocks(this); // Initialize mocks
+        
+        String variableId = "A01";
+        Variable expectedVariable = new Variable(variableId, "Some Value");
+        when(variableRepository.findById(variableId)).thenReturn(Optional.of(expectedVariable));
+        
         // Act
-        String result = variableService.validateAndPersistVariable(variableDefinition);
-
+        Optional<Variable> result = variableService.findVariableById(variableId);
+        
         // Assert
-        assertEquals("New variable persisted with variance ID: A01", result);
-        verify(variableRepository, times(1)).save(variableDefinition);
+        assertEquals(Optional.of(expectedVariable), result);
     }
-
+    
     @Test
-    public void testValidateAndPersistVariable_ExistingVariable_Failure() {
+    void testFindVariableById_NotFound() {
         // Arrange
-        VariableDefinitionEntity variableDefinition = new VariableDefinitionEntity();
-        variableDefinition.setVariableName("TestVariable");
-        variableDefinition.setVariableVarianceId("A01");
-        // Mock behavior to return an existing variance ID
-        when(variableRepository.findByVariableVarianceId("A01")).thenReturn(Optional.of(new VariableDefinitionEntity()));
-
+        MockitoAnnotations.openMocks(this); // Initialize mocks
+        
+        String variableId = "B02"; // Assuming this ID is not present in the repository
+        when(variableRepository.findById(variableId)).thenReturn(Optional.empty());
+        
         // Act
-        String result = variableService.validateAndPersistVariable(variableDefinition);
-
+        Optional<Variable> result = variableService.findVariableById(variableId);
+        
         // Assert
-        assertEquals("Variable already exists with variance ID: A01", result);
-        verifyZeroInteractions(varianceIdGenerator);
-        verifyZeroInteractions(variableRepository);
-    }
-
-    @Test
-    public void testValidateAndPersistVariable_NewVarianceId_Success() {
-        // Arrange
-        VariableDefinitionEntity variableDefinition = new VariableDefinitionEntity();
-        variableDefinition.setVariableName("TestVariable");
-        variableDefinition.setVariableVarianceId("A01");
-        // Mock behavior to return null, indicating a new variance ID
-        when(varianceIdGenerator.getNewVarianceId(any())).thenReturn("A02");
-        // Mock behavior to return null, indicating the variable is not found
-        when(variableRepository.findByVariableVarianceId("A01")).thenReturn(Optional.empty());
-
-        // Act
-        String result = variableService.validateAndPersistVariable(variableDefinition);
-
-        // Assert
-        assertEquals("New variable persisted with variance ID: A02", result);
-        assertEquals("A02", variableDefinition.getVariableVarianceId());
-        verify(variableRepository, times(1)).save(variableDefinition);
+        assertEquals(Optional.empty(), result);
     }
 }
